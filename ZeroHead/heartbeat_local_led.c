@@ -1,0 +1,19 @@
+#include "config.h"
+#include <time.h>
+
+void heartbeat_led_local(int fd, short event, void *arg)
+{
+}
+
+int heartbeat_led_register(struct event_base *evbase)
+{
+	struct event *ev;
+	struct timeval tv;
+	tv.tv_sec 	= 0;
+	tv.tv_usec 	= 150000;
+	
+	ev = event_new(evbase, -1, EV_PERSIST, heartbeat_led_local, NULL);
+	event_add(ev, &tv);
+
+	return 0;
+}
