@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 in_port_t get_in_port(struct sockaddr *sa)
 {
     if (sa->sa_family == AF_INET) {
@@ -30,21 +29,4 @@ char *get_ip_str(const struct sockaddr *sa)
     }
 
     return buf;
-}
-
-void util_timer_callback(int fd, short event, void *arg)
-{
-}
-
-int utils_register(struct event_base *evbase)
-{
-    struct event *ev;
-    struct timeval tv;
-    tv.tv_sec   = 0;
-    tv.tv_usec  = 950000;
-
-    ev = event_new(evbase, -1, EV_PERSIST, util_timer_callback, NULL);
-    event_add(ev, &tv);
-
-    return 0;
 }

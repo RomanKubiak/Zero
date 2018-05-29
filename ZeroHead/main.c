@@ -30,12 +30,6 @@ int main (int argc, char *argv[])
     	return -1;
     }
     
-    if (utils_register(evbase) == -1)
-    {
-        ERROR("utils_register failed\n");
-    	return -1;
-    }
-    
     INFO("registering wiringPi components\n");	
     if (wiringPiSetup() == -1)
     {

@@ -6,10 +6,10 @@ void serial_event(int serial_fd, short event, void *arg)
 {
     char readbuf[128];
     int read_data_size = 0;
-    uint8_t msg_type = 0;
-    char buf[128];
+    uint32_t array_size;
     mpack_reader_t reader;
-    size_t allocated_size;
+    uint8_t message_type;
+    mpack_error_t error;
     
     if ( (read_data_size = read(serial_fd, readbuf, sizeof(readbuf))) == -1)
     {
@@ -18,25 +18,59 @@ void serial_event(int serial_fd, short event, void *arg)
     }
     
     mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
-    if (mpack_expect_array(&reader) == 2) // msg type and data
+    array_size = mpack_expect_array_max(&reader,16);
+    
+    DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
+    
+    message_type = mpack_expect_u8(&reader);
+    
+    if (!handle_message(message_type, &reader))
     {
-        DEBUG("unpacked array of 2 elements\n");
-        msg_type = mpack_expect_int(&reader);
-        if (msg_type == MSG_STATUS)
-        {
-            DEBUG("got status message\n");
-            mpack_expect_bin_max(&reader, sizeof(struct current_status_t));
-            mpack_read_bytes(&reader, &buf[0], 68);
-            struct current_status_t *status = (struct current_status_t *)&buf;
-            DEBUG("%d %d\n", status->body_millis, status->battery_mv);
-        }
+        ERROR("Can't handle message: %d\n", message_type);
     }
+    
+    mpack_done_array(&reader);
+    
+    if ((error = mpack_reader_destroy(&reader)) != mpack_ok)
+    {
+        ERROR("Error \"%s\" occured reading data!\n", mpack_error_to_string(error));
+    }
+}
+
+void ping_timer_callback(int serial_fd, short event, void *arg)
+{
+    char *data;
+    size_t size;
+    int ret;
+    mpack_writer_t writer;
+    
+    mpack_writer_init_growable(&writer, &data, &size);
+    mpack_start_array(&writer, 2);
+    mpack_write_uint(&writer, MSG_PING);
+    mpack_write_u8(&writer, 13);
+    mpack_finish_array(&writer);
+    
+    if (mpack_writer_destroy(&writer) != mpack_ok)
+    {
+        ERROR("an error occured encoding ping data\n");
+        return;
+    }
+    if ((ret = write(serial_fd, data, size)) == -1)
+    {
+        ERROR("can't write to serial port: %s\n", strerror(errno));
+        return;
+    }
+    DEBUG("written %d out of %d bytes to serial port\n", ret, size);
 }
 
 int serial_register(struct event_base *evbase)
 {
     int serial_fd;
     struct event *ev;
+    struct timeval tv;
+    tv.tv_sec   = 0;
+    tv.tv_usec  = 950000;
+    
     if ((serial_fd = serialOpen(CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED)) < 0)
     {
         ERROR("can't open serial device %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);
@@ -52,5 +86,7 @@ int serial_register(struct event_base *evbase)
     }
     
     event_add(ev, NULL);
+    ev = event_new(evbase, serial_fd, EV_PERSIST, ping_timer_callback, NULL);
+    event_add(ev, &tv);
     return 0;
 }

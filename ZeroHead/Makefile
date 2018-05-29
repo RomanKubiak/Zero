@@ -1,9 +1,9 @@
 CC=gcc
 CFLAGS=-c -Wall -std=c99 -I. -DMPACK
 LDFLAGS=-levent -lwiringPi
-SOURCES=main.c utils.c udp_server.c http_server.c heartbeat_local_led.c mpack/mpack.c serial.c
+SOURCES=main.c udp_server.c http_server.c heartbeat_local_led.c mpack/mpack.c serial.c utils.c messages.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=zero
+EXECUTABLE=zero_head
 
 all: $(SOURCES) $(EXECUTABLE)
     
@@ -14,5 +14,5 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -f *.o
+	rm -f obj/*.o
 	rm -f zero
