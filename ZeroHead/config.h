@@ -39,5 +39,6 @@ int serial_register(struct event_base *evbase);
 char *get_ip_str(const struct sockaddr *sa);
 in_port_t get_in_port(struct sockaddr *sa);
 
-bool handle_message(uint8_t message_type, mpack_reader_t *reader);
+bool handle_serial_message(uint8_t message_type, mpack_reader_t *reader);
+bool handle_udp_message(uint8_t message_type, mpack_reader_t *reader);
 #endif

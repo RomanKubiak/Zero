@@ -18,13 +18,13 @@ void serial_event(int serial_fd, short event, void *arg)
     }
     
     mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
-    array_size = mpack_expect_array_max(&reader,16);
+    array_size = mpack_expect_array_max(&reader, 128);
     
-    DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
+    //DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
     
     message_type = mpack_expect_u8(&reader);
     
-    if (!handle_message(message_type, &reader))
+    if (!handle_serial_message(message_type, &reader))
     {
         ERROR("Can't handle message: %d\n", message_type);
     }
@@ -60,7 +60,7 @@ void ping_timer_callback(int serial_fd, short event, void *arg)
         ERROR("can't write to serial port: %s\n", strerror(errno));
         return;
     }
-    DEBUG("written %d out of %d bytes to serial port\n", ret, size);
+    //DEBUG("written %d out of %d bytes to serial port\n", ret, size);
 }
 
 int serial_register(struct event_base *evbase)
@@ -76,7 +76,7 @@ int serial_register(struct event_base *evbase)
         ERROR("can't open serial device %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);
         return -1;
     }
-    DEBUG("opened serial port %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);    
+    //DEBUG("opened serial port %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);    
     ev = event_new(evbase, serial_fd, EV_READ|EV_PERSIST, serial_event, NULL);
     
     if (ev == NULL)

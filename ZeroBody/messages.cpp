@@ -1,5 +1,6 @@
 #include "messages.h"
 #include "commands.h"
+#include "util.h"
 
 bool handle_incoming_message(uint8_t message_type)
 {
@@ -21,11 +22,10 @@ bool handle_incoming_message(uint8_t message_type)
 
 bool send_msg_pong()
 {
-    uint8_t seq;
-    msgpck_read_integer(&Serial, &seq, 1);
+    msgpck_read_integer(&Serial, &body_health.last_ping_seq, 1);
     msgpck_write_array_header(&Serial,2);
     msgpck_write_integer(&Serial, MSG_PONG);
-    msgpck_write_integer(&Serial, seq);
+    msgpck_write_integer(&Serial, body_health.last_ping_seq);
     return (true);
 }
 

@@ -14,5 +14,5 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -f obj/*.o
-	rm -f zero
+	rm -f *.o
+	rm -f zero_head
