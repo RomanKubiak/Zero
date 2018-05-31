@@ -24,6 +24,7 @@ ZeroCommandManager::~ZeroCommandManager()
 void ZeroCommandManager::setCameraPan(uint8_t angle)
 {
 	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
 	mpack_start_array(&writer, 4);
 	mpack_write_u8(&writer, MSG_CMD);
 	mpack_write_u8(&writer, CMD_SERVO);
@@ -36,6 +37,7 @@ void ZeroCommandManager::setCameraPan(uint8_t angle)
 void ZeroCommandManager::setCameraTilt(uint8_t angle)
 {
 	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
 	mpack_start_array(&writer, 4);
 	mpack_write_u8(&writer, MSG_CMD);
 	mpack_write_u8(&writer, CMD_SERVO);
@@ -43,12 +45,13 @@ void ZeroCommandManager::setCameraTilt(uint8_t angle)
 	mpack_write_u8(&writer, angle);
 	mpack_writer_destroy(&writer);
 
-	_DBG("setCameraTilt: writing %d bytes", size);
+	_DBG("setCameraTilt: writing %d bytes", writeBufferSize);
 	udpSocket->write("192.168.1.12", 31337, (void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::writeAuthCode()
 {
+	mpack_start_array(&writer, 2);
 	mpack_write_u8(&writer, CONFIG_AUTH_TOKEN_TYPE);
-	mpack_write_u32(&write, CONFIG_AUTH_TOKEN);
+	mpack_write_u32(&writer, CONFIG_AUTH_TOKEN);
 }
