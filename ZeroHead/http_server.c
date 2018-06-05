@@ -43,17 +43,20 @@ int http_server_register(struct event_base *evbase)
     
     if (httpd == NULL)
     {
-        printf("error: failed to initialize built-in httpd\n");
+        ERROR("error: failed to initialize built-in httpd\n");
         return -1;
     }
     
     
     if (evhttp_bind_socket(httpd, "0.0.0.0", CONFIG_PI_PORT) != 0)
     {
-        printf("error: can't listen on 0:12345\n");
+        ERROR("error: can't listen on 0:%d\n", CONFIG_PI_PORT);
         return -1;
     }
-
+    else
+    {
+        INFO("http server started on 0.0.0.0:%d\n", CONFIG_PI_PORT);
+    }	
     evhttp_set_gencb(httpd, http_server_process_request, NULL);
     
     return 0;

@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-c -Wall -std=c99 -I. -DMPACK
+CFLAGS=-c -Wall -std=c99 -I. -DMPACK -DMPACK_DEBUG -DMPACK_STDIO -D_DEBUG
 LDFLAGS=-levent -lwiringPi
-SOURCES=main.c udp_server.c http_server.c heartbeat_local_led.c mpack/mpack.c serial.c utils.c messages.c
+SOURCES=main.c udp_server.c http_server.c mpack/mpack.c serial.c utils.c messages.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=zero_head
 

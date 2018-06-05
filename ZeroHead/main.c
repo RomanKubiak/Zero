@@ -1,8 +1,9 @@
 #include "config.h"
 
+struct event_base *evbase = NULL;
+
 int main (int argc, char *argv[])
 {
-	struct event_base *evbase = NULL;
     evbase = event_base_new();
     if (evbase == NULL)
     {
@@ -24,12 +25,6 @@ int main (int argc, char *argv[])
     	return -1;
     }
 
-    if (heartbeat_led_register(evbase) == -1)
-    {
-        ERROR("heartbeat_led_register failed\n");
-    	return -1;
-    }
-    
     INFO("registering wiringPi components\n");	
     if (wiringPiSetup() == -1)
     {

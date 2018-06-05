@@ -1,6 +1,8 @@
 #include "config.h"
 #include <mpack/mpack.h>
 
+int udp_socket = -1;
+
 static bool is_client_authorized(mpack_reader_t *reader)
 {
 	uint8_t auth_type;
@@ -32,10 +34,9 @@ static void udp_server_callback(const int sock, short int which, void *arg)
 	socklen_t server_sz = sizeof(server_sin);
 	struct sockaddr *addr = (struct sockaddr *) &server_sin;
 	char readbuf[128];
-	uint32_t read_data_size, array_size;
+	uint32_t read_data_size;
 	mpack_reader_t reader;
 	mpack_error_t error;
-	uint8_t message_type;
 	
 	/* Recv the data, store the address of the sender in server_sin */
 	if ((read_data_size = recvfrom(sock, &readbuf, sizeof(readbuf) - 1, 0, addr, &server_sz)) == -1) {
@@ -43,37 +44,33 @@ static void udp_server_callback(const int sock, short int which, void *arg)
 		event_loopbreak();
 	}
 	
-	mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
-	array_size = mpack_expect_array_max(&reader, 128);
+	DEBUG("got a UDP packet from: %s:%d\n", get_ip_str(addr), get_in_port(addr));
 	
-	DEBUG("udp data size %d, read %d array size\n", read_data_size, array_size);
+	mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
 
 	if (!is_client_authorized(&reader))
 	{
 		ERROR("Remote client is not authorized to send data to us\n");
-		event_loopbreak();
+
+		mpack_done_array(&reader);
 		return;
 	}
 	
-	message_type = mpack_expect_u8(&reader);
-	
-	if (!handle_udp_message(message_type, &reader))
+	mpack_done_array(&reader);
+
+	if (!handle_udp_message(&reader))
 	{
-		ERROR("Can't handle UDP message type 0x%x\n", message_type);
-		return;
+		DEBUG("UDP message handler failed\n");
 	}
 	
 	if ((error = mpack_reader_destroy(&reader)) != mpack_ok)
 	{
 		ERROR("Error \"%s\" occured reading UDP data\n", mpack_error_to_string(error));
 	}
-	
-	DEBUG("got a UDP packet from: %s:%d\n", get_ip_str(addr), get_in_port(addr));
 }
 
 int udp_server_register(struct event_base *evbase)
 {
-	int udp_socket;
 	struct event *udp_event = NULL;
 	struct sockaddr_in sin;
 	

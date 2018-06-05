@@ -3,7 +3,8 @@
 
 #define CONFIG_SERIAL_SPEED		115200
 
-#define CONFIG_MPACK_WRITER_BUFFER	1024
+#define CONFIG_MPACK_WRITER_BUFFER	256
+#define CONFIG_MPACK_MSG_ARRAY_MAX	128
 
 #define CONFIG_PI_JSON_FILE 		"./zero.json"
 #define CONFIG_PI_SERIAL		"/dev/ttyACM0"
@@ -19,21 +20,25 @@
 #define CONFIG_AR_SERIAL_RX		8
 #define CONFIG_AR_SERIAL_TX		11
 
-/* MSGPACK commands */
-#define MSG_HEARTBEAT 	0xe1
-#define MSG_STATUS	0xe2
-#define MSG_CMD		0xe3
-#define MSG_PONG	0xe4
-#define MSG_PING	0xe5
-#define MSG_UNKNOWN	0xef
-#define MSG_ACK_CMD	0xe6
-#define MSG_NAK_CMD	0xe7
+#define CONFIG_HEAD_IS_STUPID		1
 
-#define CMD_MOTOR	0xf1
-#define CMD_SERVO	0xf2
-#define CMD_RADAR	0xf3
-#define CMD_NEOPIXEL	0xf4
-#define CMD_RESET	0xf5
+/* MSGPACK commands */
+#define MSG_HEARTBEAT 		0xe1
+#define MSG_STATUS		0xe2
+#define MSG_CMD			0xe3
+#define MSG_PONG		0xe4
+#define MSG_PING		0xe5
+#define MSG_UNKNOWN		0xef
+#define MSG_ACK_CMD		0xe6
+#define MSG_NAK_CMD		0xe7
+#define MSG_I2C_SCAN_RESULT	0xe8
+#define MSG_I2C_SCAN		0xe9
+
+#define CMD_MOTOR		0xf1
+#define CMD_SERVO		0xf2
+#define CMD_RADAR		0xf3
+#define CMD_NEOPIXEL		0xf4
+#define CMD_RESET		0xf5
 
 #define CONFIG_AUTH_TOKEN	0x429b
 #define CONFIG_AUTH_TOKEN_TYPE	0xd7

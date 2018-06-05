@@ -8,5 +8,5 @@
 bool handle_incoming_message(uint8_t message_type);
 bool send_msg_pong();
 bool send_msg_unknown();
-
+bool send_i2c_scan();
 #endif

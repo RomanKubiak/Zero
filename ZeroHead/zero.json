@@ -1,0 +1,6 @@
+{
+    "video_url":"http://user:Jesien01.@uranus.hopto.org:8554/stream/video.mjpeg",
+    "neural_host":"uranus.hopto.org",
+    "neural_port":"31337",
+    "neural_proto":"UDP"
+}

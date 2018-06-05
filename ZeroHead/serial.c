@@ -2,7 +2,9 @@
 #include <wiringSerial.h>
 #include "mpack/mpack.h"
 
-void serial_event(int serial_fd, short event, void *arg)
+int serial_fd = -1;
+
+void serial_read_event(int serial_fd, short event, void *arg)
 {
     char readbuf[128];
     int read_data_size = 0;
@@ -20,13 +22,13 @@ void serial_event(int serial_fd, short event, void *arg)
     mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
     array_size = mpack_expect_array_max(&reader, 128);
     
-    //DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
+    // DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
     
     message_type = mpack_expect_u8(&reader);
     
     if (!handle_serial_message(message_type, &reader))
     {
-        ERROR("Can't handle message: %d\n", message_type);
+        ERROR("Can't handle message: 0x%x\n", message_type);
     }
     
     mpack_done_array(&reader);
@@ -34,6 +36,7 @@ void serial_event(int serial_fd, short event, void *arg)
     if ((error = mpack_reader_destroy(&reader)) != mpack_ok)
     {
         ERROR("Error \"%s\" occured reading data!\n", mpack_error_to_string(error));
+        return;
     }
 }
 
@@ -60,12 +63,11 @@ void ping_timer_callback(int serial_fd, short event, void *arg)
         ERROR("can't write to serial port: %s\n", strerror(errno));
         return;
     }
-    //DEBUG("written %d out of %d bytes to serial port\n", ret, size);
+    // DEBUG("written %d out of %d bytes to serial port\n", ret, size);
 }
 
 int serial_register(struct event_base *evbase)
 {
-    int serial_fd;
     struct event *ev;
     struct timeval tv;
     tv.tv_sec   = 0;
@@ -76,8 +78,8 @@ int serial_register(struct event_base *evbase)
         ERROR("can't open serial device %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);
         return -1;
     }
-    //DEBUG("opened serial port %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);    
-    ev = event_new(evbase, serial_fd, EV_READ|EV_PERSIST, serial_event, NULL);
+    DEBUG("opened serial port %s %dbps\n", CONFIG_PI_SERIAL, CONFIG_SERIAL_SPEED);    
+    ev = event_new(evbase, serial_fd, EV_READ|EV_PERSIST, serial_read_event, NULL);
     
     if (ev == NULL)
     {
