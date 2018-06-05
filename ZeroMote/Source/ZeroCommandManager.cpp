@@ -10,7 +10,8 @@
 
 #include "ZeroCommandManager.h"
 
-ZeroCommandManager::ZeroCommandManager() : writeBuffer(nullptr), writeBufferSize(0)
+ZeroCommandManager::ZeroCommandManager() 
+	: writeBuffer(nullptr), writeBufferSize(0)
 {
 	writeBuffer = (char *)malloc(CONFIG_MPACK_WRITER_BUFFER);
 	udpSocket = new DatagramSocket(false);
@@ -31,8 +32,7 @@ void ZeroCommandManager::setCameraPan(uint8_t angle)
 	mpack_write_u8(&writer, (uint8_t)servo_pan);
 	mpack_write_u8(&writer, angle);
 	mpack_writer_destroy(&writer);
-
-	udpSocket->write("192.168.1.12", 31337, (void *)writeBuffer, writeBufferSize);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
 }
 void ZeroCommandManager::setCameraTilt(uint8_t angle)
 {
@@ -44,9 +44,17 @@ void ZeroCommandManager::setCameraTilt(uint8_t angle)
 	mpack_write_u8(&writer, (uint8_t)servo_tilt);
 	mpack_write_u8(&writer, angle);
 	mpack_writer_destroy(&writer);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+}
 
-	_DBG("setCameraTilt: writing %d bytes", writeBufferSize);
-	udpSocket->write("192.168.1.12", 31337, (void *)writeBuffer, writeBufferSize);
+void ZeroCommandManager::requestI2CScan()
+{
+	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
+	mpack_start_array(&writer, 1);
+	mpack_write_u8(&writer, MSG_I2C_SCAN);
+	mpack_writer_destroy(&writer);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::writeAuthCode()

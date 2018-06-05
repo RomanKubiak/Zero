@@ -12,8 +12,7 @@
 #include <mpack/mpack.h>
 #include <../shared/config.h>
 #include "../JuceLibraryCode/JuceHeader.h"
-
-#define _DBG(s, ...) Logger::writeToLog(String::formatted(s, __VA_ARGS__))
+#include "Zero.h"
 
 class ZeroCommandManager
 {
@@ -22,6 +21,9 @@ class ZeroCommandManager
 		~ZeroCommandManager();
 		void setCameraPan(uint8_t angle);
 		void setCameraTilt(uint8_t angle);
+		void setNeuralHost(const String &_neuralHost) { neuralHost = _neuralHost;  }
+		void setNeuralPort(const int &_neuralPort) { neuralPort = _neuralPort;  }
+		void requestI2CScan();
 
 	private:
 		void writeAuthCode();
@@ -29,4 +31,6 @@ class ZeroCommandManager
 		size_t writeBufferSize;
 		mpack_writer_t writer;
 		ScopedPointer<DatagramSocket> udpSocket;
+		int neuralPort;
+		String neuralHost;
 };

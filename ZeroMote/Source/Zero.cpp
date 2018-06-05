@@ -72,18 +72,21 @@ public:
     class ZeroWindow    : public DocumentWindow
     {
     public:
-        ZeroWindow (String name)  : DocumentWindow (name,Desktop::getInstance().getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),DocumentWindow::allButtons)
+        ZeroWindow (String name) 
+			: DocumentWindow (name,
+				Desktop::getInstance().getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
+				DocumentWindow::allButtons), main(nullptr)
         {
             setUsingNativeTitleBar (true);
+			setResizable(true, false);
+			
 
 			overlay = new ZeroVideoOverlay();
 			overlay->addToDesktop(ComponentPeer::windowIsTemporary);
 			overlay->setAlwaysOnTop(true);
 			overlay->toFront(true);
 			overlay->setVisible(true);
-
-            setContentOwned (new ZeroMain(overlay), true);
-			
+			setContentOwned (main = new ZeroMain(overlay), true);
             centreWithSize (getWidth(), getHeight());
             setVisible (true);
         }
@@ -97,14 +100,15 @@ public:
         }
 		void moved() override
 		{
-			Logger::outputDebugString("MainWindow::moved bounds==" + getBounds().toString());
+
 			overlay->setTopLeftPosition(getBounds().getTopLeft());
 			overlay->setSize(640, 480);
 		}
 
 		void resized() override
 		{
-			Logger::outputDebugString("MainWindow::resized bounds==" + getBounds().toString());
+			if (main)
+				main->setSize(getWidth(), getHeight());
 		}
         /* Note: Be careful if you override any DocumentWindow methods - the base
            class uses a lot of them, so by overriding you might break its functionality.
@@ -116,6 +120,7 @@ public:
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroWindow)
 			ScopedPointer<ZeroVideoOverlay> overlay;
+			ZeroMain *main;
     };
 
 private:

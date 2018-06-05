@@ -130,7 +130,11 @@ VLCWrapper::VLCWrapper ()
 
 	const char * const vlc_args[] =
 	{
-		"--osd", "--aout", "none", "--text-renderer", "any"
+		"-I",
+		"dummy",
+		"--no-video-title-show",
+		"--network-caching",
+		"30"
 	};
 
 	vlc_instan = libvlc_new (5, vlc_args);

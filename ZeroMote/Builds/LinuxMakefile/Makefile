@@ -66,6 +66,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ZeroXYComponent_cc1de5b5.o \
   $(JUCE_OBJDIR)/ZeroCommandManager_b24f2f33.o \
   $(JUCE_OBJDIR)/mpack_5f8ca9d2.o \
   $(JUCE_OBJDIR)/Zero_ba5daf31.o \
@@ -89,6 +90,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : check-pkg-config $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/ZeroXYComponent_cc1de5b5.o: ../../Source/ZeroXYComponent.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroXYComponent.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ZeroCommandManager_b24f2f33.o: ../../Source/ZeroCommandManager.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

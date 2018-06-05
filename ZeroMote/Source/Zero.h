@@ -9,3 +9,4 @@
 */
 
 #pragma once
+#define _DBG(s, ...) Logger::writeToLog(String::formatted(s, __VA_ARGS__))

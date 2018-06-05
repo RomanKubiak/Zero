@@ -21,8 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "VLCWrapper.h"
-class ZeroCommandManager;
+#include "Zero.h"
 //[/Headers]
 
 
@@ -35,38 +34,42 @@ class ZeroCommandManager;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroVideoOverlay  : public Component,
-                          public VLCEventCallback
+class ZeroXYComponent  : public Component
 {
 public:
     //==============================================================================
-    ZeroVideoOverlay ();
-    ~ZeroVideoOverlay();
+    ZeroXYComponent ();
+    ~ZeroXYComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void vlcTimeChanged(int64_t newTime);
-	void vlcPaused();
-	void vlcStarted();
-	void vlcStopped();
-	void setCommandManager(ZeroCommandManager *_zeroCommandManager);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
+    void mouseMove (const MouseEvent& e) override;
+    void mouseEnter (const MouseEvent& e) override;
+    void mouseExit (const MouseEvent& e) override;
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
+    void mouseDoubleClick (const MouseEvent& e) override;
+    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	ScopedPointer <ZeroCommandManager> zeroCommandManager;
+	Point<int> lastMouseDown;
+	Path indicatorPath;
+	Point<int> lastMouseDrag;
     //[/UserVariables]
 
     //==============================================================================
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroVideoOverlay)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroXYComponent)
 };
 
 //[EndFile] You can add extra defines here...
