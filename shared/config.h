@@ -33,6 +33,7 @@
 #define MSG_NAK_CMD		0xe7
 #define MSG_I2C_SCAN_RESULT	0xe8
 #define MSG_I2C_SCAN		0xe9
+#define MSG_HEALTH_UPDATE	0xea
 
 #define CMD_MOTOR		0xf1
 #define CMD_SERVO		0xf2
@@ -51,6 +52,13 @@ enum servo_function
 	servo_count
 };
 
+enum magnetometer_function
+{
+	mag_body,
+	mag_radar,
+	mag_camera
+};
+
 struct current_status_t
 {
 	uint8_t motor_left_speed;
@@ -65,7 +73,7 @@ struct current_status_t
 	uint8_t last_ping_seq;
 	uint32_t battery_mv;
 	uint32_t body_millis;
-	uint16_t compass_heading1;
+	uint16_t azimuth_body;
 	uint16_t compass_heading2;
 	uint32_t neopixel[CONFIG_AR_NEOPIXEL_COUNT];
 };

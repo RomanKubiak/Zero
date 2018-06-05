@@ -16,7 +16,8 @@ bool handle_serial_message(uint8_t message_type, mpack_reader_t *reader)
         case MSG_ACK_CMD:
             INFO("ACK_CMD type 0x%d\n", mpack_expect_u8(reader));
             return(true);
-
+        case MSG_I2C_SCAN_RESULT:            
+            return (handle_i2c_scan_result(reader));
         default:
             break;
     }
@@ -49,3 +50,15 @@ bool handle_udp_message(mpack_reader_t *reader)
     }
 }
 
+bool handle_i2c_scan_result(mpack_reader_t *reader)
+{
+    DEBUG("reading\n");
+    uint8_t device_count = mpack_expect_u8(reader);
+    DEBUG("device_count=%d\n", device_count);
+    for (int i=0 ;i<device_count; i++)
+    {
+        INFO("I2C device 0x%02X\n", mpack_expect_u8(reader));
+    }
+
+    return (true);
+}

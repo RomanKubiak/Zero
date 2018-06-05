@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <MechaQMC5883.h>
 #include "messages.h"
 #include "commands.h"
 #include "util.h"
@@ -47,7 +48,7 @@ bool send_i2c_scan()
 {
     byte address;
     byte error;
-    bool online[128];
+    byte online[128];
     byte device_count = 0;
     
     for (address = 1; address < 127; address++)
@@ -57,18 +58,34 @@ bool send_i2c_scan()
 		
         if (error == 0)
         {
-            online[address] = true;
+            online[device_count] = address;
             device_count++;
+        }
+        else
+        {
+            online[address] = false;
         }
     }
     
-    msgpck_write_array_header(&Serial, device_count+1);
+    msgpck_write_array_header(&Serial, device_count+2);
     msgpck_write_integer(&Serial, MSG_I2C_SCAN_RESULT);
-    for (address = 1; address < 127; address++)
+    msgpck_write_integer(&Serial, device_count);
+    
+    for (int i = 0; i < device_count; i++)
     {
-        if (online[address])
-            msgpck_write_integer(&Serial, address);
+        msgpck_write_integer(&Serial, online[i]);
     }
+    
+    msgpck_write_nil(&Serial);
+    
+    return (true);
+}
+
+bool send_health_update()
+{
+    msgpck_write_array_header(&Serial, 2);
+    msgpck_write_integer(&Serial, MSG_HEALTH_UPDATE);
+    msgpck_write_bin(&Serial, (uint8_t *)&body_health, sizeof(body_health));
     
     return (true);
 }
