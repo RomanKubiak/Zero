@@ -18,5 +18,7 @@
 class Servo;
 Servo *get_servo_by_function(servo_function f);
 void initialize_servos();
+void initialize_magnetometers();
+void set_body_health();
 static struct current_status_t body_health;
 #endif

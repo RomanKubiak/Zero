@@ -1,6 +1,10 @@
 #include "util.h"
+#include "messages.h"
 #include <Servo.h>
+#include <MechaQMC5883.h>
+
 Servo s_pan, s_tilt, s_radar;
+MechaQMC5883 m_body;
 
 #ifdef DEBUG_SERIAL_ENABLED
 SoftwareSerial debugSerial(CONFIG_AR_DEBUG_SERIAL_RX_PIN, CONFIG_AR_DEBUG_SERIAL_RX_PIN);
@@ -61,4 +65,33 @@ Servo *get_servo_by_function(servo_function f)
 			break;
 	}
 	return (nullptr);
+}
+
+MechaQMC5883 *get_magnetometer(magnetometer_function f)
+{
+	switch (f)
+	{
+		case mag_body:
+			return (&m_body);
+		default:
+			break;
+	}
+	return (nullptr);
+}
+
+void initialize_magnetometers()
+{
+	m_body.init();
+	m_body.setMode(Mode_Continuous, ODR_200Hz, RNG_8G, OSR_512);
+}
+
+void set_body_health()
+{
+	MechaQMC5883 *qmc = get_magnetometer(mag_body);
+	uint16_t x,y,z;
+
+	qmc->read(&x,&y,&z);
+	body_health.azimuth_body = qmc->azimuth(&y,&x);
+	
+	send_health_update();	
 }

@@ -42,4 +42,5 @@ in_port_t get_in_port(struct sockaddr *sa);
 
 bool handle_serial_message(uint8_t message_type, mpack_reader_t *reader);
 bool handle_udp_message(mpack_reader_t *reader);
+bool handle_i2c_scan_result(mpack_reader_t *reader);
 #endif
