@@ -43,7 +43,6 @@ class ZeroConfigDownloader : public Thread
 };
 //[/Headers]
 
-#include "ZeroXYComponent.h"
 
 
 //==============================================================================
@@ -91,7 +90,6 @@ private:
     ScopedPointer<TextEditor> zeroUrl;
     ScopedPointer<TextEditor> consoleOutput;
     ScopedPointer<TextButton> btnI2CScan;
-    ScopedPointer<ZeroXYComponent> component;
 
 
     //==============================================================================

@@ -33,6 +33,7 @@ ZeroVideoOverlay::ZeroVideoOverlay ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
+    addAndMakeVisible (cameraControl = new ZeroXYComponent());
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -49,6 +50,7 @@ ZeroVideoOverlay::~ZeroVideoOverlay()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    cameraControl = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -70,6 +72,7 @@ void ZeroVideoOverlay::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    cameraControl->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -115,6 +118,9 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="1" initialWidth="320" initialHeight="200">
   <BACKGROUND backgroundColour="0"/>
+  <JUCERCOMP name="" id="bd64555f2b9faa51" memberName="cameraControl" virtualName=""
+             explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroXYComponent.cpp"
+             constructorParams=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

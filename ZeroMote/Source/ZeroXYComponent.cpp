@@ -60,22 +60,11 @@ void ZeroXYComponent::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff323e44));
-
-    {
-        float x = 1.0f, y = 1.0f, width = static_cast<float> (getWidth() - 2), height = static_cast<float> (getHeight() - 2);
-        Colour fillColour = Colour (0x52686868);
-        Colour strokeColour = Colour (0xffcecece);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 10.000f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.000f);
-    }
+    g.fillAll (Colour (0x02000000));
 
     //[UserPaint] Add your own custom painting code here..
-	g.strokePath(indicatorPath, PathStrokeType(1.0f));
+	g.setColour(Colours::pink);
+	g.strokePath(indicatorPath, PathStrokeType(2.0f));
     //[/UserPaint]
 }
 
@@ -119,10 +108,10 @@ void ZeroXYComponent::mouseDrag (const MouseEvent& e)
     //[UserCode_mouseDrag] -- Add your code here...
 	indicatorPath.clear();
 	indicatorPath.addArrow(
-		Line<float>(Point<float>(getWidth() / 2.0f, getHeight() / 2.0f), e.getPosition().toFloat()), 
-		1.5f, 
-		getWidth() * 0.05f, 
-		getHeight() * 0.05f);
+		Line<float>(Point<float>(getWidth() / 2.0f, getHeight() / 2.0f), e.getPosition().toFloat()),
+		1.5f,
+		8.0f,
+		8.0f);
 	lastMouseDrag = e.getPosition();
 	repaint();
     //[/UserCode_mouseDrag]
@@ -179,10 +168,7 @@ BEGIN_JUCER_METADATA
     <METHOD name="mouseDoubleClick (const MouseEvent&amp; e)"/>
     <METHOD name="mouseWheelMove (const MouseEvent&amp; e, const MouseWheelDetails&amp; wheel)"/>
   </METHODS>
-  <BACKGROUND backgroundColour="ff323e44">
-    <ROUNDRECT pos="1 1 2M 2M" cornerSize="10" fill="solid: 52686868" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="solid: ffcecece"/>
-  </BACKGROUND>
+  <BACKGROUND backgroundColour="2000000"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
