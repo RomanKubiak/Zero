@@ -21,10 +21,13 @@ class ZeroCommandManager
 		~ZeroCommandManager();
 		void setCameraPan(uint8_t angle);
 		void setCameraTilt(uint8_t angle);
+
 		void setNeuralHost(const String &_neuralHost) { neuralHost = _neuralHost;  }
 		void setNeuralPort(const int &_neuralPort) { neuralPort = _neuralPort;  }
 		void requestI2CScan();
-
+		void requestHealth();
+		void setRemoteMode();
+		void setLocalMode();
 	private:
 		void writeAuthCode();
 		char *writeBuffer;
