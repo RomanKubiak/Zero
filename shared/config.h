@@ -38,8 +38,8 @@
 #define MSG_I2C_SCAN_RESULT	0xe8
 #define MSG_I2C_SCAN		0xe9
 #define MSG_HEALTH_UPDATE	0xea
-#define MSG_MODE_REMOTE		0xeb
-#define MSG_MODE_LOCAL		0xec
+#define MSG_MODE_REMOTE         0xeb
+#define MSG_MODE_LOCAL          0xec
 
 #define CMD_MOTOR		0xf1
 #define CMD_SERVO		0xf2

@@ -79,8 +79,6 @@ public:
         {
             setUsingNativeTitleBar (true);
 			setResizable(true, false);
-			
-
 			overlay = new ZeroVideoOverlay();
 			overlay->addToDesktop(ComponentPeer::windowIsTemporary);
 			overlay->setAlwaysOnTop(true);
@@ -100,9 +98,7 @@ public:
         }
 		void moved() override
 		{
-
 			overlay->setTopLeftPosition(getBounds().getTopLeft());
-			overlay->setSize(640, 480);
 		}
 
 		void resized() override

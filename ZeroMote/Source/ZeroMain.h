@@ -43,7 +43,6 @@ class ZeroConfigDownloader : public Thread
 };
 //[/Headers]
 
-#include "ZeroXYComponent.h"
 
 
 //==============================================================================
@@ -57,7 +56,8 @@ Describe your class and how it works here!
 class ZeroMain  : public Component,
                   public AsyncUpdater,
                   public Logger,
-                  public Button::Listener
+                  public Button::Listener,
+                  public Slider::Listener
 {
 public:
     //==============================================================================
@@ -73,6 +73,7 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
+    void sliderValueChanged (Slider* sliderThatWasMoved) override;
     void moved() override;
 
 
@@ -91,7 +92,9 @@ private:
     ScopedPointer<TextEditor> zeroUrl;
     ScopedPointer<TextEditor> consoleOutput;
     ScopedPointer<TextButton> btnI2CScan;
-    ScopedPointer<ZeroXYComponent> component;
+    ScopedPointer<Slider> cameraPan;
+    ScopedPointer<Slider> cameraTilt;
+    ScopedPointer<TextButton> btnReqHealth;
 
 
     //==============================================================================

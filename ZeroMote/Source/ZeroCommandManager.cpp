@@ -63,3 +63,33 @@ void ZeroCommandManager::writeAuthCode()
 	mpack_write_u8(&writer, CONFIG_AUTH_TOKEN_TYPE);
 	mpack_write_u32(&writer, CONFIG_AUTH_TOKEN);
 }
+
+void ZeroCommandManager::requestHealth()
+{
+	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
+	mpack_start_array(&writer, 1);
+	mpack_write_u8(&writer, MSG_HEALTH_UPDATE);
+	mpack_writer_destroy(&writer);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+}
+
+void ZeroCommandManager::setRemoteMode()
+{
+	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
+	mpack_start_array(&writer, 1);
+	mpack_write_u8(&writer, MSG_MODE_REMOTE);
+	mpack_writer_destroy(&writer);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+}
+
+void ZeroCommandManager::setLocalMode()
+{
+	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
+	writeAuthCode();
+	mpack_start_array(&writer, 1);
+	mpack_write_u8(&writer, MSG_MODE_LOCAL);
+	mpack_writer_destroy(&writer);
+	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+}

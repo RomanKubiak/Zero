@@ -6,6 +6,7 @@
               cppLanguageStandard="11" jucerVersion="5.1.1">
   <MAINGROUP id="W30pQj" name="ZeroMote">
     <GROUP id="{97E181C7-68D5-2650-A5EF-91BA487A8C3C}" name="Source">
+      <FILE id="aETOLh" name="config.h" compile="0" resource="0" file="../shared/config.h"/>
       <FILE id="LkSsES" name="ZeroXYComponent.cpp" compile="1" resource="0"
             file="Source/ZeroXYComponent.cpp"/>
       <FILE id="PeWA6P" name="ZeroXYComponent.h" compile="0" resource="0"
