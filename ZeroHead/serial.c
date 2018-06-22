@@ -3,10 +3,11 @@
 #include "mpack/mpack.h"
 
 int serial_fd = -1;
+static uint32_t ping_seq = 0;
 
 void serial_read_event(int serial_fd, short event, void *arg)
 {
-    char readbuf[128];
+    char readbuf[2048];
     int read_data_size = 0;
     uint32_t array_size;
     mpack_reader_t reader;
@@ -22,7 +23,7 @@ void serial_read_event(int serial_fd, short event, void *arg)
     mpack_reader_init(&reader, &readbuf[0], sizeof(readbuf), read_data_size);
     array_size = mpack_expect_array_max(&reader, 128);
     
-    // DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
+    DEBUG("serial data size %d, read %d array size\n", read_data_size, array_size);
     
     message_type = mpack_expect_u8(&reader);
     
@@ -38,6 +39,8 @@ void serial_read_event(int serial_fd, short event, void *arg)
         ERROR("Error \"%s\" occured reading data!\n", mpack_error_to_string(error));
         return;
     }
+    
+    DEBUG("Done reading message_type=0x%x\n", message_type);
 }
 
 void ping_timer_callback(int serial_fd, short event, void *arg)
@@ -49,8 +52,8 @@ void ping_timer_callback(int serial_fd, short event, void *arg)
     
     mpack_writer_init_growable(&writer, &data, &size);
     mpack_start_array(&writer, 2);
-    mpack_write_uint(&writer, MSG_PING);
-    mpack_write_u8(&writer, 13);
+    mpack_write_u8(&writer, MSG_PING);
+    mpack_write_u32(&writer, ++ping_seq);
     mpack_finish_array(&writer);
     
     if (mpack_writer_destroy(&writer) != mpack_ok)
@@ -63,7 +66,7 @@ void ping_timer_callback(int serial_fd, short event, void *arg)
         ERROR("can't write to serial port: %s\n", strerror(errno));
         return;
     }
-    // DEBUG("written %d out of %d bytes to serial port\n", ret, size);
+    DEBUG("written %d out of %d bytes to serial port\n", ret, size);
 }
 
 int serial_register(struct event_base *evbase)

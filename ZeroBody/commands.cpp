@@ -4,6 +4,7 @@
 #include "commands.h"
 #include "util.h"
 
+extern struct current_status_t body_health;
 
 bool handle_incoming_command(uint8_t cmd_type)
 {

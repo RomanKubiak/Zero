@@ -1,10 +1,15 @@
 #include "util.h"
 #include "messages.h"
+#include <AStar32U4.h>
 #include <Servo.h>
 #include <MechaQMC5883.h>
+#include <Adafruit_NeoPixel.h> 
+#include <Wire.h>
 
 Servo s_pan, s_tilt, s_radar;
-MechaQMC5883 m_body;
+//MechaQMC5883 m_body;
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(CONFIG_AR_NEOPIXEL_COUNT, CONFIG_AR_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+current_status_t body_health;
 
 #ifdef DEBUG_SERIAL_ENABLED
 SoftwareSerial debugSerial(CONFIG_AR_DEBUG_SERIAL_RX_PIN, CONFIG_AR_DEBUG_SERIAL_RX_PIN);
@@ -12,7 +17,6 @@ SoftwareSerial debugSerial(CONFIG_AR_DEBUG_SERIAL_RX_PIN, CONFIG_AR_DEBUG_SERIAL
 void initialize_debug_stream()
 {
 	debugSerial.begin(9600);
-	debugSerial.println("START");
 }
 
 SoftwareSerial *getDebugStream()
@@ -67,7 +71,7 @@ Servo *get_servo_by_function(servo_function f)
 	return (nullptr);
 }
 
-MechaQMC5883 *get_magnetometer(magnetometer_function f)
+/*MechaQMC5883 *get_magnetometer(magnetometer_function f)
 {
 	switch (f)
 	{
@@ -84,14 +88,36 @@ void initialize_magnetometers()
 	m_body.init();
 	m_body.setMode(Mode_Continuous, ODR_200Hz, RNG_8G, OSR_512);
 }
+*/
+
+void initialize_neopixels()
+{
+	pixels.begin();
+	set_local_mode();
+}
+
+bool set_local_mode()
+{
+	pixels.setPixelColor(15, pixels.Color(0,16,0));
+	pixels.setPixelColor(16, pixels.Color(0,16,0));
+	pixels.show();
+	return (true);
+}
+
+bool set_remote_mode()
+{
+	pixels.setPixelColor(15, pixels.Color(16,0,0));
+	pixels.setPixelColor(16, pixels.Color(16,0,0));
+	pixels.show();
+	return (true);
+}
 
 void set_body_health()
 {
-	MechaQMC5883 *qmc = get_magnetometer(mag_body);
+	/*MechaQMC5883 *qmc = get_magnetometer(mag_body);
 	uint16_t x,y,z;
-
 	qmc->read(&x,&y,&z);
-	body_health.azimuth_body = qmc->azimuth(&y,&x);
-	
-	send_health_update();	
+	body_health.azimuth_body = qmc->azimuth(&x,&y);*/
+	body_health.current_draw = analogRead(CONFIG_AR_CURRENT_SENS_PIN);
+	body_health.battery_mv = analogRead(19);
 }

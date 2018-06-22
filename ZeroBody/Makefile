@@ -8,4 +8,5 @@ ARDUINO_LIBS		= a-star-32u4-arduino-library TimerOne arduino_msgpack Servo_Zero 
 AVRDUDE 		= $(ARDUINO_SKETCHBOOK)/upload.sh
 RESET_CMD		= /bin/true
 ARDUINO_SKETCHBOOK	= .
+#CXXFLAGS += -DDEBUG_SERIAL_ENABLED
 include /usr/share/arduino/Arduino.mk

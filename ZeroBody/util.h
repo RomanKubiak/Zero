@@ -20,5 +20,7 @@ Servo *get_servo_by_function(servo_function f);
 void initialize_servos();
 void initialize_magnetometers();
 void set_body_health();
-static struct current_status_t body_health;
+bool set_local_mode();
+bool set_remote_mode();
+void initialize_neopixels();
 #endif

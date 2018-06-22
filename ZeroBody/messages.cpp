@@ -1,8 +1,8 @@
-#include <Wire.h>
-#include <MechaQMC5883.h>
 #include "messages.h"
 #include "commands.h"
 #include "util.h"
+
+extern current_status_t body_health;
 
 bool handle_incoming_message(uint8_t message_type)
 {
@@ -10,7 +10,7 @@ bool handle_incoming_message(uint8_t message_type)
     {
         case MSG_PING:
             DBG("got ping message\n");
-            return (send_msg_pong());
+            return send_msg_pong();
 
         case MSG_CMD:
             uint8_t cmd_type;
@@ -18,10 +18,16 @@ bool handle_incoming_message(uint8_t message_type)
             DBG("got cmd message type: %d\n", cmd_type);
             return (handle_incoming_command(cmd_type));
             
-        case MSG_I2C_SCAN:
-            DBG("Scanning i2c bus\n");
-            return (send_i2c_scan());
-                        
+        case MSG_HEALTH_UPDATE:
+            DBG("Health status requested\n");
+            return (send_health_update());
+
+        case MSG_MODE_REMOTE:
+            return (set_remote_mode());
+            
+        case MSG_MODE_LOCAL:
+            return (set_local_mode());
+             
         default:
             break;
     }
@@ -30,10 +36,11 @@ bool handle_incoming_message(uint8_t message_type)
 
 bool send_msg_pong()
 {
-    msgpck_read_integer(&Serial, &body_health.last_ping_seq, 1);
+    msgpck_read_integer(&Serial, (uint8_t *)&body_health.last_ping_seq, sizeof(body_health.last_ping_seq));
     msgpck_write_array_header(&Serial,2);
     msgpck_write_integer(&Serial, MSG_PONG);
     msgpck_write_integer(&Serial, body_health.last_ping_seq);
+    DBG("sent pong\n");
     return (true);
 }
 
@@ -44,7 +51,7 @@ bool send_msg_unknown()
     return (true);
 }
 
-bool send_i2c_scan()
+/*bool send_i2c_scan()
 {
     byte address;
     byte error;
@@ -80,12 +87,16 @@ bool send_i2c_scan()
     
     return (true);
 }
+*/
 
 bool send_health_update()
 {
-    msgpck_write_array_header(&Serial, 2);
+    set_body_health();
+    msgpck_write_array_header(&Serial, 5);
     msgpck_write_integer(&Serial, MSG_HEALTH_UPDATE);
-    msgpck_write_bin(&Serial, (uint8_t *)&body_health, sizeof(body_health));
-    
+    msgpck_write_float(&Serial,   body_health.current_draw);
+    msgpck_write_integer(&Serial, body_health.azimuth_body);
+    msgpck_write_integer(&Serial, body_health.battery_mv);
+    msgpck_write_integer(&Serial, body_health.last_ping_seq);
     return (true);
 }

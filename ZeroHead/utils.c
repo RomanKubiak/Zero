@@ -30,3 +30,13 @@ char *get_ip_str(const struct sockaddr *sa)
 
     return buf;
 }
+
+void dump_data_as_hex(const char *data, size_t data_size)
+{
+    DEBUG("\ndump %d bytes to screen---------\n", data_size);
+    for (int i=0; i<data_size; i++)
+        fprintf(stderr, "0x%X ", data[i]);
+        
+    fprintf(stderr, "\n");
+    DEBUG("\ndump end------------------------\n");
+}

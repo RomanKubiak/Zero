@@ -1,7 +1,6 @@
 #include <AStar32U4.h>
 #include <TimerOne.h>
 #include <Servo.h>
-#include <Adafruit_NeoPixel.h>
 #include <Wire.h>
 
 #include "messages.h"
@@ -9,33 +8,21 @@
 
 volatile int timer_int;
 uint32_t loop_count;
-#undef DEBUG_SERIAL_ENABLED
-#define LOOP_COUNT_PERIOD 5
+extern current_status_t body_health;
+
+#define FPS 24
 
 bool heartbeat_led_state = LOW;
 char serial_buffer[CONFIG_MPACK_WRITER_BUFFER];
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel (
-	CONFIG_AR_NEOPIXEL_COUNT,
-	CONFIG_AR_NEOPIXEL_PIN,
-	NEO_GRB + NEO_KHZ800
-);
-
 void timer_callback(void)
 {
-	timer_int = 1;
-	loop_count++;
-	if (loop_count == LOOP_COUNT_PERIOD)
-		loop_count = 0;
-	
-	if (loop_count == 0)
-	{
+	if (++loop_count == FPS)
+	{	
 		ledYellow(heartbeat_led_state);
 		heartbeat_led_state = !heartbeat_led_state;
+		loop_count = 0;
 	}
-
-	set_body_health();
-	timer_int = 0;
 }
 
 bool get_serial_message()
@@ -43,6 +30,12 @@ bool get_serial_message()
 	bool res = true;
 	if (Serial.available() > 0)
 	{
+		if (Serial.peek() == '\n')
+		{
+			Serial.println("newline: debuginfo\n");
+			Serial.flush();
+			return true;
+		}
 		uint32_t array_size;
 		uint8_t message_type;
 		res &= msgpck_array_next(&Serial);
@@ -57,7 +50,7 @@ bool get_serial_message()
 
 		if (!res)
 		{
-			DBG("can't read map size\n");
+			DBG("can't read array size\n");
 			return false;
 		}
 
@@ -77,16 +70,24 @@ bool get_serial_message()
 
 void setup()
 {
-	Serial.begin(115200);
+	Serial.begin(CONFIG_SERIAL_SPEED);
+	DBG("start\n");
+	memset((void *)&body_health, 0, sizeof(struct current_status_t));
 #ifdef DEBUG_SERIAL_ENABLED
 	initialize_debug_stream();
 #endif
-	Timer1.initialize(50000 * LOOP_COUNT_PERIOD);
+	DBG("attach timer1\n");
+	Timer1.initialize(1000000/FPS);
 	Timer1.attachInterrupt(timer_callback);
-	body_health.setup_done = true;
+	DBG("init servos\n");
 	initialize_servos();
+	pinMode(19, INPUT);
+	DBG("init i2c\n");
 	Wire.begin();
-	initialize_magnetometers();
+	DBG("init magnetometers\n");
+	// initialize_magnetometers();
+	DBG("init neopixels\n");
+	// initialize_neopixels();
 }
 
 void loop()
