@@ -67,10 +67,8 @@ enum magnetometer_function
 
 struct __attribute__((__packed__)) current_status_t
 {
-	uint8_t motor_left_speed;
-	uint8_t motor_left_dir;
-	uint8_t motor_right_speed;
-	uint8_t motor_right_dir;
+	uint8_t speed_left;
+	uint8_t speed_right;
 	uint16_t radar_reading1;
 	uint16_t radar_reading2;
 	uint8_t servos[servo_count];

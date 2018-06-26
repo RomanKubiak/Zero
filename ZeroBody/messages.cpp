@@ -9,17 +9,14 @@ bool handle_incoming_message(uint8_t message_type)
     switch (message_type)
     {
         case MSG_PING:
-            DBG("got ping message\n");
             return send_msg_pong();
 
         case MSG_CMD:
             uint8_t cmd_type;
             msgpck_read_integer(&Serial, &cmd_type, 1);
-            DBG("got cmd message type: %d\n", cmd_type);
             return (handle_incoming_command(cmd_type));
             
         case MSG_HEALTH_UPDATE:
-            DBG("Health status requested\n");
             return (send_health_update());
 
         case MSG_MODE_REMOTE:
@@ -40,7 +37,6 @@ bool send_msg_pong()
     msgpck_write_array_header(&Serial,2);
     msgpck_write_integer(&Serial, MSG_PONG);
     msgpck_write_integer(&Serial, body_health.last_ping_seq);
-    DBG("sent pong\n");
     return (true);
 }
 

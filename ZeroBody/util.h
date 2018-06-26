@@ -23,4 +23,7 @@ void set_body_health();
 bool set_local_mode();
 bool set_remote_mode();
 void initialize_neopixels();
+
+// defined in commands.cpp
+void initialize_motors();
 #endif

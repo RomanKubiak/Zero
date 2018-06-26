@@ -71,23 +71,18 @@ bool get_serial_message()
 void setup()
 {
 	Serial.begin(CONFIG_SERIAL_SPEED);
-	DBG("start\n");
 	memset((void *)&body_health, 0, sizeof(struct current_status_t));
 #ifdef DEBUG_SERIAL_ENABLED
 	initialize_debug_stream();
 #endif
-	DBG("attach timer1\n");
 	Timer1.initialize(1000000/FPS);
 	Timer1.attachInterrupt(timer_callback);
-	DBG("init servos\n");
 	initialize_servos();
 	pinMode(19, INPUT);
-	DBG("init i2c\n");
-	Wire.begin();
-	DBG("init magnetometers\n");
+	//Wire.begin();
 	// initialize_magnetometers();
-	DBG("init neopixels\n");
-	// initialize_neopixels();
+	initialize_neopixels();
+	initialize_motors();
 }
 
 void loop()

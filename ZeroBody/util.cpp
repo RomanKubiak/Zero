@@ -93,7 +93,10 @@ void initialize_magnetometers()
 void initialize_neopixels()
 {
 	pixels.begin();
+	pixels.setPixelColor(17, pixels.Color(4,4,4));
+	pixels.setPixelColor(18, pixels.Color(4,4,4));
 	set_local_mode();
+	
 }
 
 bool set_local_mode()

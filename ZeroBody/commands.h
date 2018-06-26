@@ -5,6 +5,7 @@
 
 bool handle_incoming_command(uint8_t cmd_type);
 bool cmd_servo();
+bool cmd_motor();
 void cmd_nak(uint8_t cmd_type);
 void cmd_ack(uint8_t cmd_type);
 #endif
