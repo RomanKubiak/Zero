@@ -55,6 +55,12 @@ public:
 
     void paint (Graphics& g) override;
     void resized() override;
+    bool keyPressed (const KeyPress& key) override;
+    bool keyStateChanged (bool isKeyDown) override;
+    void modifierKeysChanged (const ModifierKeys& modifiers) override;
+    void focusGained (FocusChangeType cause) override;
+    void focusLost (FocusChangeType cause) override;
+    void focusOfChildComponentChanged (FocusChangeType cause) override;
 
 
 

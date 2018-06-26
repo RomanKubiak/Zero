@@ -68,17 +68,18 @@ ZeroMain::ZeroMain (ZeroVideoOverlay *_overlay)
     addAndMakeVisible (vlc = new VLCWrapper());
 
     addAndMakeVisible (btnPlay = new TextButton ("Play"));
+    btnPlay->setConnectedEdges (Button::ConnectedOnRight);
     btnPlay->addListener (this);
 
     addAndMakeVisible (zeroUrl = new TextEditor ("Zero URL"));
     zeroUrl->setMultiLine (false);
     zeroUrl->setReturnKeyStartsNewLine (false);
     zeroUrl->setReadOnly (false);
-    zeroUrl->setScrollbarsShown (true);
-    zeroUrl->setCaretVisible (true);
-    zeroUrl->setPopupMenuEnabled (true);
+    zeroUrl->setScrollbarsShown (false);
+    zeroUrl->setCaretVisible (false);
+    zeroUrl->setPopupMenuEnabled (false);
     zeroUrl->setColour (TextEditor::textColourId, Colour (0xffe1f8ff));
-    zeroUrl->setColour (TextEditor::backgroundColourId, Colour (0x41000000));
+    zeroUrl->setColour (TextEditor::backgroundColourId, Colour (0xa2000000));
     zeroUrl->setColour (TextEditor::highlightColourId, Colour (0x00000000));
     zeroUrl->setColour (TextEditor::outlineColourId, Colour (0x75ffffff));
     zeroUrl->setColour (TextEditor::shadowColourId, Colour (0x91fcfcfc));
@@ -91,32 +92,20 @@ ZeroMain::ZeroMain (ZeroVideoOverlay *_overlay)
     consoleOutput->setScrollbarsShown (true);
     consoleOutput->setCaretVisible (false);
     consoleOutput->setPopupMenuEnabled (false);
-    consoleOutput->setColour (TextEditor::textColourId, Colour (0xffa9a9a9));
-    consoleOutput->setColour (TextEditor::backgroundColourId, Colours::black);
+    consoleOutput->setColour (TextEditor::textColourId, Colour (0xffe9e9e9));
+    consoleOutput->setColour (TextEditor::backgroundColourId, Colour (0xff161616));
     consoleOutput->setColour (TextEditor::highlightColourId, Colour (0xbf44c4ff));
     consoleOutput->setText (TRANS("Console"));
 
     addAndMakeVisible (btnI2CScan = new TextButton ("I2C Scan"));
+    btnI2CScan->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
     btnI2CScan->addListener (this);
     btnI2CScan->setColour (TextButton::buttonColourId, Colour (0xff5c88a4));
-
-    addAndMakeVisible (cameraPan = new Slider ("Camera Pan"));
-    cameraPan->setTooltip (TRANS("Camera Pan"));
-    cameraPan->setRange (1, 180, 1);
-    cameraPan->setSliderStyle (Slider::LinearHorizontal);
-    cameraPan->setTextBoxStyle (Slider::TextBoxRight, false, 24, 18);
-    cameraPan->addListener (this);
-
-    addAndMakeVisible (cameraTilt = new Slider ("Camera Tilt"));
-    cameraTilt->setTooltip (TRANS("Camera Tilt"));
-    cameraTilt->setRange (0, 180, 1);
-    cameraTilt->setSliderStyle (Slider::LinearVertical);
-    cameraTilt->setTextBoxStyle (Slider::TextBoxBelow, false, 24, 20);
-    cameraTilt->addListener (this);
 
     addAndMakeVisible (btnReqHealth = new TextButton ("Request Health"));
     btnReqHealth->setTooltip (TRANS("Request Health"));
     btnReqHealth->setButtonText (TRANS("Health"));
+    btnReqHealth->setConnectedEdges (Button::ConnectedOnLeft);
     btnReqHealth->addListener (this);
     btnReqHealth->setColour (TextButton::buttonColourId, Colour (0xff099c85));
 
@@ -127,7 +116,7 @@ ZeroMain::ZeroMain (ZeroVideoOverlay *_overlay)
 	vlc->attachCallback(overlay);
     //[/UserPreSize]
 
-    setSize (400, 400);
+    setSize (600, 600);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -145,8 +134,6 @@ ZeroMain::~ZeroMain()
     zeroUrl = nullptr;
     consoleOutput = nullptr;
     btnI2CScan = nullptr;
-    cameraPan = nullptr;
-    cameraTilt = nullptr;
     btnReqHealth = nullptr;
 
 
@@ -172,14 +159,12 @@ void ZeroMain::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    vlc->setBounds (0, 0, proportionOfWidth (0.9500f), proportionOfHeight (0.4500f));
-    btnPlay->setBounds (proportionOfWidth (0.8500f), proportionOfHeight (0.9600f), proportionOfWidth (0.1500f), proportionOfHeight (0.0400f));
-    zeroUrl->setBounds (0, proportionOfHeight (0.5000f), proportionOfWidth (0.8500f), proportionOfHeight (0.0500f));
-    consoleOutput->setBounds (0, proportionOfHeight (0.5500f), proportionOfWidth (0.8500f), proportionOfHeight (0.4500f));
-    btnI2CScan->setBounds (proportionOfWidth (0.8500f), proportionOfHeight (0.5500f), proportionOfWidth (0.1500f), proportionOfHeight (0.0400f));
-    cameraPan->setBounds (0, proportionOfHeight (0.4500f), proportionOfWidth (0.9500f), proportionOfHeight (0.0500f));
-    cameraTilt->setBounds (proportionOfWidth (0.9500f), 0, proportionOfWidth (0.0500f), proportionOfHeight (0.5000f));
-    btnReqHealth->setBounds (proportionOfWidth (0.8500f), proportionOfHeight (0.6000f), proportionOfWidth (0.1500f), proportionOfHeight (0.0400f));
+    vlc->setBounds (0, 0, proportionOfWidth (1.0000f), proportionOfHeight (0.4500f));
+    btnPlay->setBounds (0, proportionOfHeight (0.4500f), proportionOfWidth (0.2000f), proportionOfHeight (0.0500f));
+    zeroUrl->setBounds (0, proportionOfHeight (0.5000f), proportionOfWidth (1.0000f), proportionOfHeight (0.0500f));
+    consoleOutput->setBounds (0, proportionOfHeight (0.5500f), proportionOfWidth (1.0000f), proportionOfHeight (0.4500f));
+    btnI2CScan->setBounds (proportionOfWidth (0.2000f), proportionOfHeight (0.4500f), proportionOfWidth (0.2000f), proportionOfHeight (0.0500f));
+    btnReqHealth->setBounds (proportionOfWidth (0.4000f), proportionOfHeight (0.4500f), proportionOfWidth (0.2000f), proportionOfHeight (0.0500f));
     //[UserResized] Add your own custom resize handling here..
 	overlay->setSize(vlc->getWidth(), vlc->getHeight());
     //[/UserResized]
@@ -194,6 +179,7 @@ void ZeroMain::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_btnPlay] -- add your button handler code here..
 		_DBG("Trying to download config from: "+zeroUrl->getText()+"\n");
+		zeroCommandManager->setActive(false);
 		zeroConfigDownloader->setUrl(zeroUrl->getText());
 		zeroConfigDownloader->startThread();
         //[/UserButtonCode_btnPlay]
@@ -201,7 +187,6 @@ void ZeroMain::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnI2CScan)
     {
         //[UserButtonCode_btnI2CScan] -- add your button handler code here..
-		zeroCommandManager->requestI2CScan();
         //[/UserButtonCode_btnI2CScan]
     }
     else if (buttonThatWasClicked == btnReqHealth)
@@ -213,28 +198,6 @@ void ZeroMain::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
-}
-
-void ZeroMain::sliderValueChanged (Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == cameraPan)
-    {
-        //[UserSliderCode_cameraPan] -- add your slider handling code here..
-		zeroCommandManager->setCameraPan(cameraPan->getValue());
-        //[/UserSliderCode_cameraPan]
-    }
-    else if (sliderThatWasMoved == cameraTilt)
-    {
-        //[UserSliderCode_cameraTilt] -- add your slider handling code here..
-		zeroCommandManager->setCameraTilt(180 - cameraTilt->getValue());
-        //[/UserSliderCode_cameraTilt]
-    }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
 void ZeroMain::moved()
@@ -256,6 +219,8 @@ void ZeroMain::handleAsyncUpdate()
 		if (res.failed())
 		{
 			_ERR("Failed to parse config as JSON\n");
+			zeroCommandManager->setActive(false);
+
 		}
 		else
 		{
@@ -263,9 +228,13 @@ void ZeroMain::handleAsyncUpdate()
 			zeroCommandManager->setNeuralPort(jsonConfig.getDynamicObject()->getProperty("neural_port"));
 			vlc->loadMedia(jsonConfig.getDynamicObject()->getProperty("video_url"));
 			vlc->play();
-
+			zeroCommandManager->setActive(true);
 			zeroCommandManager->setRemoteMode();
 		}
+	}
+	else
+	{
+		zeroCommandManager->setActive(false);
 	}
 }
 
@@ -297,42 +266,33 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component, public AsyncUpdater, public Logger"
                  constructorParams="ZeroVideoOverlay *_overlay" variableInitialisers="overlay(_overlay)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="400" initialHeight="400">
+                 fixedSize="1" initialWidth="600" initialHeight="600">
   <METHODS>
     <METHOD name="moved()"/>
   </METHODS>
   <BACKGROUND backgroundColour="ff323e44"/>
   <GENERICCOMPONENT name="" id="8a738eb729bd9b3d" memberName="vlc" virtualName=""
-                    explicitFocusOrder="0" pos="0 0 95% 45%" class="VLCWrapper" params=""/>
+                    explicitFocusOrder="0" pos="0 0 100% 45%" class="VLCWrapper"
+                    params=""/>
   <TEXTBUTTON name="Play" id="1991ccadb6da15cc" memberName="btnPlay" virtualName=""
-              explicitFocusOrder="0" pos="85% 96% 15% 4%" buttonText="Play"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="0 45% 20% 5%" buttonText="Play" connectedEdges="2"
+              needsCallback="1" radioGroupId="0"/>
   <TEXTEDITOR name="Zero URL" id="e1a9b5497fb3dc28" memberName="zeroUrl" virtualName=""
-              explicitFocusOrder="0" pos="0 50% 85% 5%" textcol="ffe1f8ff"
-              bkgcol="41000000" hilitecol="0" outlinecol="75ffffff" shadowcol="91fcfcfc"
+              explicitFocusOrder="0" pos="0 50% 100% 5%" textcol="ffe1f8ff"
+              bkgcol="a2000000" hilitecol="0" outlinecol="75ffffff" shadowcol="91fcfcfc"
               initialText="http://uranus.hopto.org:31337" multiline="0" retKeyStartsLine="0"
-              readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+              readonly="0" scrollbars="0" caret="0" popupmenu="0"/>
   <TEXTEDITOR name="Console" id="d4b0221a8d721030" memberName="consoleOutput"
-              virtualName="" explicitFocusOrder="0" pos="0 55% 85% 45%" textcol="ffa9a9a9"
-              bkgcol="ff000000" hilitecol="bf44c4ff" initialText="Console"
+              virtualName="" explicitFocusOrder="0" pos="0 55% 100% 45%" textcol="ffe9e9e9"
+              bkgcol="ff161616" hilitecol="bf44c4ff" initialText="Console"
               multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="1"
               caret="0" popupmenu="0"/>
   <TEXTBUTTON name="I2C Scan" id="952f1fa33f7bc2ef" memberName="btnI2CScan"
-              virtualName="" explicitFocusOrder="0" pos="85% 55% 15% 4%" bgColOff="ff5c88a4"
-              buttonText="I2C Scan" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="Camera Pan" id="9ea79ad5dc665d41" memberName="cameraPan"
-          virtualName="" explicitFocusOrder="0" pos="0 45% 95% 5%" tooltip="Camera Pan"
-          min="1" max="180" int="1" style="LinearHorizontal" textBoxPos="TextBoxRight"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="18" skewFactor="1"
-          needsCallback="1"/>
-  <SLIDER name="Camera Tilt" id="6bb590fc64a05b57" memberName="cameraTilt"
-          virtualName="" explicitFocusOrder="0" pos="95% 0 5% 50%" tooltip="Camera Tilt"
-          min="0" max="180" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
-          needsCallback="1"/>
+              virtualName="" explicitFocusOrder="0" pos="20% 45% 20% 5%" bgColOff="ff5c88a4"
+              buttonText="I2C Scan" connectedEdges="3" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Request Health" id="1cb0da407fff16d2" memberName="btnReqHealth"
-              virtualName="" explicitFocusOrder="0" pos="85% 60% 15% 4%" tooltip="Request Health"
-              bgColOff="ff099c85" buttonText="Health" connectedEdges="0" needsCallback="1"
+              virtualName="" explicitFocusOrder="0" pos="40% 45% 20% 5%" tooltip="Request Health"
+              bgColOff="ff099c85" buttonText="Health" connectedEdges="1" needsCallback="1"
               radioGroupId="0"/>
 </JUCER_COMPONENT>
 

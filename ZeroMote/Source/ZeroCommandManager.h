@@ -28,7 +28,10 @@ class ZeroCommandManager
 		void requestHealth();
 		void setRemoteMode();
 		void setLocalMode();
+		void setActive(bool _isActive) { isActive = _isActive;  }
+		void setMotors(int16_t left, int16_t right);
 	private:
+		bool isActive;
 		void writeAuthCode();
 		char *writeBuffer;
 		size_t writeBufferSize;

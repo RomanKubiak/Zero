@@ -55,6 +55,12 @@ public:
     void mouseUp (const MouseEvent& e) override;
     void mouseDoubleClick (const MouseEvent& e) override;
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override;
+    bool keyPressed (const KeyPress& key) override;
+    bool keyStateChanged (bool isKeyDown) override;
+    void modifierKeysChanged (const ModifierKeys& modifiers) override;
+    void focusGained (FocusChangeType cause) override;
+    void focusLost (FocusChangeType cause) override;
+    void focusOfChildComponentChanged (FocusChangeType cause) override;
 
 
 

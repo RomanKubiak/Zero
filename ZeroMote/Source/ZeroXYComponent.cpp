@@ -139,6 +139,44 @@ void ZeroXYComponent::mouseWheelMove (const MouseEvent& e, const MouseWheelDetai
     //[/UserCode_mouseWheelMove]
 }
 
+bool ZeroXYComponent::keyPressed (const KeyPress& key)
+{
+    //[UserCode_keyPressed] -- Add your code here...
+    return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    //[/UserCode_keyPressed]
+}
+
+bool ZeroXYComponent::keyStateChanged (bool isKeyDown)
+{
+    //[UserCode_keyStateChanged] -- Add your code here...
+    return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    //[/UserCode_keyStateChanged]
+}
+
+void ZeroXYComponent::modifierKeysChanged (const ModifierKeys& modifiers)
+{
+    //[UserCode_modifierKeysChanged] -- Add your code here...
+    //[/UserCode_modifierKeysChanged]
+}
+
+void ZeroXYComponent::focusGained (FocusChangeType cause)
+{
+    //[UserCode_focusGained] -- Add your code here...
+    //[/UserCode_focusGained]
+}
+
+void ZeroXYComponent::focusLost (FocusChangeType cause)
+{
+    //[UserCode_focusLost] -- Add your code here...
+    //[/UserCode_focusLost]
+}
+
+void ZeroXYComponent::focusOfChildComponentChanged (FocusChangeType cause)
+{
+    //[UserCode_focusOfChildComponentChanged] -- Add your code here...
+    //[/UserCode_focusOfChildComponentChanged]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -167,6 +205,12 @@ BEGIN_JUCER_METADATA
     <METHOD name="mouseUp (const MouseEvent&amp; e)"/>
     <METHOD name="mouseDoubleClick (const MouseEvent&amp; e)"/>
     <METHOD name="mouseWheelMove (const MouseEvent&amp; e, const MouseWheelDetails&amp; wheel)"/>
+    <METHOD name="focusGained (FocusChangeType cause)"/>
+    <METHOD name="keyStateChanged (bool isKeyDown)"/>
+    <METHOD name="keyPressed (const KeyPress&amp; key)"/>
+    <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
+    <METHOD name="focusLost (FocusChangeType cause)"/>
+    <METHOD name="focusOfChildComponentChanged (FocusChangeType cause)"/>
   </METHODS>
   <BACKGROUND backgroundColour="2000000"/>
 </JUCER_COMPONENT>
