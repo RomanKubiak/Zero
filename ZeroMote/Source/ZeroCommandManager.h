@@ -19,8 +19,8 @@ class ZeroCommandManager
 	public:
 		ZeroCommandManager();
 		~ZeroCommandManager();
-		void setCameraPan(uint8_t angle);
-		void setCameraTilt(uint8_t angle);
+		void setCameraPan(int16_t angle, bool is_relative=false);
+		void setCameraTilt(int16_t angle, bool is_relative=false);
 
 		void setNeuralHost(const String &_neuralHost) { neuralHost = _neuralHost;  }
 		void setNeuralPort(const int &_neuralPort) { neuralPort = _neuralPort;  }

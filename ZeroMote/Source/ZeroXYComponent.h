@@ -22,6 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Zero.h"
+class ZeroCommandManager;
 //[/Headers]
 
 
@@ -34,7 +35,7 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroXYComponent  : public Component
+class ZeroXYComponent  : public Component, public Timer
 {
 public:
     //==============================================================================
@@ -43,6 +44,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void timerCallback();
+	void setCommandManager(ZeroCommandManager *_zeroCommandManager);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -68,7 +71,9 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Point<int> lastMouseDown;
 	Path indicatorPath;
-	Point<int> lastMouseDrag;
+	int lastDistanceX, lastDistanceY;
+	bool wasDragged;
+	ZeroCommandManager *zeroCommandManager;
     //[/UserVariables]
 
     //==============================================================================

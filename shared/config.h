@@ -1,13 +1,6 @@
 #ifndef __ZERO_CONFIG_H__
 #define __ZERO_CONFIG_H__
 
-#ifdef _MSC_VER
-#  define PACKED_STRUCT(name) \
-    __pragma(pack(push, 1)) struct name __pragma(pack(pop))
-#elif defined(__GNUC__)
-#  define PACKED_STRUCT(name) struct __attribute__((packed)) name
-#endif
-
 #define CONFIG_SERIAL_SPEED		9600
 
 #define CONFIG_MPACK_WRITER_BUFFER	256
@@ -72,7 +65,7 @@ enum magnetometer_function
 	mag_camera
 };
 
-PACKED_STRUCT (current_status_t)
+struct current_status_t
 {
 	uint8_t speed_left;
 	uint8_t speed_right;

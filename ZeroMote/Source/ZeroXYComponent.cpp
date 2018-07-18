@@ -18,6 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "ZeroCommandManager.h"
 //[/Headers]
 
 #include "ZeroXYComponent.h"
@@ -27,7 +28,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ZeroXYComponent::ZeroXYComponent ()
+ZeroXYComponent::ZeroXYComponent () : zeroCommandManager(nullptr)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -98,8 +99,12 @@ void ZeroXYComponent::mouseExit (const MouseEvent& e)
 void ZeroXYComponent::mouseDown (const MouseEvent& e)
 {
     //[UserCode_mouseDown] -- Add your code here...
-	Desktop::getInstance().setMousePosition(getScreenBounds().getCentre());
+	//Desktop::getInstance().setMousePosition(getScreenBounds().getCentre());
 	setMouseCursor(MouseCursor::NoCursor);
+	stopTimer();
+	lastDistanceX = lastDistanceY = 0;
+	startTimerHz(6);
+	wasDragged = false;
     //[/UserCode_mouseDown]
 }
 
@@ -107,12 +112,15 @@ void ZeroXYComponent::mouseDrag (const MouseEvent& e)
 {
     //[UserCode_mouseDrag] -- Add your code here...
 	indicatorPath.clear();
+	Point<int> down = e.getMouseDownPosition();
 	indicatorPath.addArrow(
-		Line<float>(Point<float>(getWidth() / 2.0f, getHeight() / 2.0f), e.getPosition().toFloat()),
+		Line<float>(down.toFloat(), e.getPosition().toFloat()),
 		1.5f,
 		8.0f,
 		8.0f);
-	lastMouseDrag = e.getPosition();
+	lastDistanceX = e.getDistanceFromDragStartX();
+	lastDistanceY = e.getDistanceFromDragStartY();
+	wasDragged = true;
 	repaint();
     //[/UserCode_mouseDrag]
 }
@@ -120,10 +128,13 @@ void ZeroXYComponent::mouseDrag (const MouseEvent& e)
 void ZeroXYComponent::mouseUp (const MouseEvent& e)
 {
     //[UserCode_mouseUp] -- Add your code here...
-	Desktop::getInstance().setMousePosition(getScreenBounds().getCentre());
+	//Desktop::getInstance().setMousePosition(getScreenBounds().getCentre());
 	setMouseCursor(MouseCursor::NormalCursor);
 	indicatorPath.clear();
 	repaint();
+	stopTimer();
+	lastDistanceX = lastDistanceY = 0;
+	wasDragged = false;
     //[/UserCode_mouseUp]
 }
 
@@ -180,6 +191,39 @@ void ZeroXYComponent::focusOfChildComponentChanged (FocusChangeType cause)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ZeroXYComponent::timerCallback()
+{
+	if (wasDragged && zeroCommandManager)
+	{
+		if (lastDistanceX > 10) // pan right
+		{
+			_DBG("pan right %d\n", lastDistanceX);
+			zeroCommandManager->setCameraPan(1, true);
+		}
+		if (lastDistanceX < -10) // pan left
+		{
+			_DBG("pan left %d\n", lastDistanceX);
+			zeroCommandManager->setCameraPan(-1, true);
+		}
+	
+		if (lastDistanceY > 10)
+		{
+			_DBG("tilt down %d\n", lastDistanceY);
+			zeroCommandManager->setCameraTilt(-1, true);
+		}
+
+		if (lastDistanceY < -10)
+		{
+			_DBG("tilt up %d\n", lastDistanceY);
+			zeroCommandManager->setCameraTilt(1, true);
+		}
+	}
+}
+
+void ZeroXYComponent::setCommandManager(ZeroCommandManager *_zeroCommandManager)
+{
+	zeroCommandManager = _zeroCommandManager;
+}
 //[/MiscUserCode]
 
 

@@ -155,6 +155,7 @@ void ZeroVideoOverlay::vlcStopped()
 void ZeroVideoOverlay::setCommandManager(ZeroCommandManager *_zeroCommandManager)
 {
 	zeroCommandManager = _zeroCommandManager;
+	cameraControl->setCommandManager(_zeroCommandManager);
 }
 //[/MiscUserCode]
 
