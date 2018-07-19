@@ -30,6 +30,15 @@ class ZeroCommandManager
 		void setLocalMode();
 		void setActive(bool _isActive) { isActive = _isActive;  }
 		void setMotors(int16_t left, int16_t right);
+
+		void connectToRobot(const RemoteRobotItem &robot);
+		class Listener
+		{
+			public:
+				virtual void connectToRobot(const RemoteRobotItem &robot) {}
+		};
+		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
+
 	private:
 		bool isActive;
 		void writeAuthCode();
@@ -39,4 +48,5 @@ class ZeroCommandManager
 		ScopedPointer<DatagramSocket> udpSocket;
 		int neuralPort;
 		String neuralHost;
+		ListenerList <Listener> listeners;
 };

@@ -211,6 +211,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ZeroLiveStatus.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ZeroRobotList.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ZeroStatus.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ZeroConsole.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\ZeroXYComponent.cpp">
       <Filter>ZeroMote\Source</Filter>
     </ClCompile>
@@ -1446,6 +1458,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ZeroLiveStatus.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ZeroRobotList.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ZeroStatus.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ZeroConsole.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\shared\config.h">
       <Filter>ZeroMote\Source</Filter>
     </ClInclude>

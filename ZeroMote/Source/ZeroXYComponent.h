@@ -35,17 +35,17 @@ class ZeroCommandManager;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroXYComponent  : public Component, public Timer
+class ZeroXYComponent  : public Component,
+                         public Timer
 {
 public:
     //==============================================================================
-    ZeroXYComponent ();
+    ZeroXYComponent (ZeroCommandManager *_zeroCommandManager);
     ~ZeroXYComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void timerCallback();
-	void setCommandManager(ZeroCommandManager *_zeroCommandManager);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

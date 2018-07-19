@@ -151,6 +151,10 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ZeroLiveStatus.cpp"/>
+    <ClCompile Include="..\..\Source\ZeroRobotList.cpp"/>
+    <ClCompile Include="..\..\Source\ZeroStatus.cpp"/>
+    <ClCompile Include="..\..\Source\ZeroConsole.cpp"/>
     <ClCompile Include="..\..\Source\ZeroXYComponent.cpp"/>
     <ClCompile Include="..\..\Source\ZeroCommandManager.cpp"/>
     <ClCompile Include="..\..\mpack\mpack.c"/>
@@ -1282,6 +1286,10 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ZeroLiveStatus.h"/>
+    <ClInclude Include="..\..\Source\ZeroRobotList.h"/>
+    <ClInclude Include="..\..\Source\ZeroStatus.h"/>
+    <ClInclude Include="..\..\Source\ZeroConsole.h"/>
     <ClInclude Include="..\..\..\shared\config.h"/>
     <ClInclude Include="..\..\Source\ZeroXYComponent.h"/>
     <ClInclude Include="..\..\Source\Zero.h"/>

@@ -28,7 +28,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ZeroXYComponent::ZeroXYComponent () : zeroCommandManager(nullptr)
+ZeroXYComponent::ZeroXYComponent (ZeroCommandManager *_zeroCommandManager)
+    : zeroCommandManager(_zeroCommandManager)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -205,7 +206,7 @@ void ZeroXYComponent::timerCallback()
 			_DBG("pan left %d\n", lastDistanceX);
 			zeroCommandManager->setCameraPan(-1, true);
 		}
-	
+
 		if (lastDistanceY > 10)
 		{
 			_DBG("tilt down %d\n", lastDistanceY);
@@ -220,10 +221,6 @@ void ZeroXYComponent::timerCallback()
 	}
 }
 
-void ZeroXYComponent::setCommandManager(ZeroCommandManager *_zeroCommandManager)
-{
-	zeroCommandManager = _zeroCommandManager;
-}
 //[/MiscUserCode]
 
 
@@ -237,7 +234,8 @@ void ZeroXYComponent::setCommandManager(ZeroCommandManager *_zeroCommandManager)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroXYComponent" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
+                 parentClasses="public Component, public Timer" constructorParams="ZeroCommandManager *_zeroCommandManager"
+                 variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="111" initialHeight="111">
   <METHODS>

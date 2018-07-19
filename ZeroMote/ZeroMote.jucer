@@ -6,6 +6,17 @@
               cppLanguageStandard="11" jucerVersion="5.1.1">
   <MAINGROUP id="W30pQj" name="ZeroMote">
     <GROUP id="{97E181C7-68D5-2650-A5EF-91BA487A8C3C}" name="Source">
+      <FILE id="Wn0PJC" name="ZeroLiveStatus.cpp" compile="1" resource="0"
+            file="Source/ZeroLiveStatus.cpp"/>
+      <FILE id="D5D3YQ" name="ZeroLiveStatus.h" compile="0" resource="0"
+            file="Source/ZeroLiveStatus.h"/>
+      <FILE id="zf1XaD" name="ZeroRobotList.cpp" compile="1" resource="0"
+            file="Source/ZeroRobotList.cpp"/>
+      <FILE id="si9Fp6" name="ZeroRobotList.h" compile="0" resource="0" file="Source/ZeroRobotList.h"/>
+      <FILE id="Cil2Xv" name="ZeroStatus.cpp" compile="1" resource="0" file="Source/ZeroStatus.cpp"/>
+      <FILE id="k5546h" name="ZeroStatus.h" compile="0" resource="0" file="Source/ZeroStatus.h"/>
+      <FILE id="OWgMd8" name="ZeroConsole.cpp" compile="1" resource="0" file="Source/ZeroConsole.cpp"/>
+      <FILE id="azinU7" name="ZeroConsole.h" compile="0" resource="0" file="Source/ZeroConsole.h"/>
       <FILE id="aETOLh" name="config.h" compile="0" resource="0" file="../shared/config.h"/>
       <FILE id="LkSsES" name="ZeroXYComponent.cpp" compile="1" resource="0"
             file="Source/ZeroXYComponent.cpp"/>

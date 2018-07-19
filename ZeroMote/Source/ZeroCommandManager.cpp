@@ -115,3 +115,11 @@ void ZeroCommandManager::setMotors(int16_t left, int16_t right)
 	mpack_writer_destroy(&writer);
 	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
 }
+
+void ZeroCommandManager::connectToRobot(const RemoteRobotItem &robot)
+{
+	for (int i = 0; i < listeners.size(); i++)
+	{
+		listeners.getListeners()[i]->connectToRobot(robot);
+	}
+}

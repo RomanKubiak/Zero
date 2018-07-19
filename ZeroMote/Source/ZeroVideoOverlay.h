@@ -25,7 +25,10 @@
 class ZeroCommandManager;
 //[/Headers]
 
+#include "ZeroStatus.h"
 #include "ZeroXYComponent.h"
+#include "ZeroConsole.h"
+#include "ZeroLiveStatus.h"
 
 
 //==============================================================================
@@ -41,7 +44,7 @@ class ZeroVideoOverlay  : public Component,
 {
 public:
     //==============================================================================
-    ZeroVideoOverlay ();
+    ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager);
     ~ZeroVideoOverlay();
 
     //==============================================================================
@@ -50,7 +53,6 @@ public:
 	void vlcPaused();
 	void vlcStarted();
 	void vlcStopped();
-	void setCommandManager(ZeroCommandManager *_zeroCommandManager);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -66,11 +68,14 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	ScopedPointer <ZeroCommandManager> zeroCommandManager;
+	ZeroCommandManager *zeroCommandManager;
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<ZeroStatus> status;
     ScopedPointer<ZeroXYComponent> cameraControl;
+    ScopedPointer<ZeroConsole> zeroConsole;
+    ScopedPointer<ZeroLiveStatus> liveStatus;
 
 
     //==============================================================================

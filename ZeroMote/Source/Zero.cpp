@@ -9,6 +9,7 @@
 */
 
 #include "ZeroVideoOverlay.h"
+#include "ZeroCommandManager.h"
 #include "ZeroMain.h"
 
 //==============================================================================
@@ -77,14 +78,16 @@ public:
 				Desktop::getInstance().getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
 				DocumentWindow::allButtons), main(nullptr)
         {
+			zeroCommandManager = new ZeroCommandManager();
             setUsingNativeTitleBar (true);
 			setResizable(true, false);
-			overlay = new ZeroVideoOverlay();
+			overlay = new ZeroVideoOverlay(zeroCommandManager);
 			overlay->addToDesktop(ComponentPeer::windowIsTemporary);
 			overlay->setAlwaysOnTop(true);
 			overlay->toFront(true);
 			overlay->setVisible(true);
-			setContentOwned (main = new ZeroMain(overlay), true);
+			setContentOwned (main = new ZeroMain(overlay, zeroCommandManager), true);
+			zeroCommandManager->addListener(main);
             centreWithSize (getWidth(), getHeight());
             setVisible (true);
         }
@@ -106,6 +109,15 @@ public:
 			if (main)
 				main->setSize(getWidth(), getHeight());
 		}
+
+		void minimisationStateChanged (bool isNowMinimised) override
+		{
+			_DBG("Zero::minimized\n");
+			if (isNowMinimised)
+				overlay->setVisible(false);
+			else
+				overlay->setVisible(true);
+		}
         /* Note: Be careful if you override any DocumentWindow methods - the base
            class uses a lot of them, so by overriding you might break its functionality.
            It's best to do all your work in your content component instead, but if
@@ -113,10 +125,21 @@ public:
            subclass also calls the superclass's method.
         */
 
+		bool keyPressed (const KeyPress& key) override
+		{
+			// pass the ky to overlay, it's a different window
+			// and will not catch theese events directly unless it's focused
+			if (overlay)
+			{
+				return (overlay->keyPressed(key));
+			}
+			return false;
+		}
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroWindow)
 			ScopedPointer<ZeroVideoOverlay> overlay;
 			ZeroMain *main;
+			ScopedPointer <ZeroCommandManager> zeroCommandManager;
     };
 
 private:

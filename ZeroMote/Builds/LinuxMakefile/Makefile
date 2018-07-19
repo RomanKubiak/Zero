@@ -66,6 +66,10 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ZeroLiveStatus_5d03ed4f.o \
+  $(JUCE_OBJDIR)/ZeroRobotList_e59b97c1.o \
+  $(JUCE_OBJDIR)/ZeroStatus_f5d1c543.o \
+  $(JUCE_OBJDIR)/ZeroConsole_89dc6c70.o \
   $(JUCE_OBJDIR)/ZeroXYComponent_cc1de5b5.o \
   $(JUCE_OBJDIR)/ZeroCommandManager_b24f2f33.o \
   $(JUCE_OBJDIR)/mpack_5f8ca9d2.o \
@@ -90,6 +94,26 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : check-pkg-config $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/ZeroLiveStatus_5d03ed4f.o: ../../Source/ZeroLiveStatus.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroLiveStatus.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ZeroRobotList_e59b97c1.o: ../../Source/ZeroRobotList.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroRobotList.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ZeroStatus_f5d1c543.o: ../../Source/ZeroStatus.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroStatus.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ZeroConsole_89dc6c70.o: ../../Source/ZeroConsole.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroConsole.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ZeroXYComponent_cc1de5b5.o: ../../Source/ZeroXYComponent.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

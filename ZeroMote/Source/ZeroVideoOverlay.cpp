@@ -28,14 +28,21 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ZeroVideoOverlay::ZeroVideoOverlay ()
+ZeroVideoOverlay::ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager)
+    : zeroCommandManager(_zeroCommandManager)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (cameraControl = new ZeroXYComponent());
+    addAndMakeVisible (status = new ZeroStatus (zeroCommandManager));
+    addAndMakeVisible (cameraControl = new ZeroXYComponent (zeroCommandManager));
+    addAndMakeVisible (zeroConsole = new ZeroConsole());
+    addAndMakeVisible (liveStatus = new ZeroLiveStatus (zeroCommandManager));
 
     //[UserPreSize]
+	status->setVisible(false);
+	//cameraControl->setVisible(false);
+	liveStatus->setVisible(false);
     //[/UserPreSize]
 
     setSize (320, 200);
@@ -51,7 +58,10 @@ ZeroVideoOverlay::~ZeroVideoOverlay()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    status = nullptr;
     cameraControl = nullptr;
+    zeroConsole = nullptr;
+    liveStatus = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -62,16 +72,6 @@ ZeroVideoOverlay::~ZeroVideoOverlay()
 void ZeroVideoOverlay::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-	if (hasKeyboardFocus(true))
-	{
-		g.setColour(Colours::white);
-		g.drawText("Sendind...", 0, 0, 64, 16, Justification::centred);
-	}
-	else
-	{
-		g.setColour(Colours::white);
-		g.drawText("Viewing...", 0, 0, 64, 16, Justification::centred);
-	}
     //[/UserPrePaint]
 
     //[UserPaint] Add your own custom painting code here..
@@ -83,7 +83,10 @@ void ZeroVideoOverlay::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    status->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     cameraControl->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    zeroConsole->setBounds (0, 0, getWidth() - 0, proportionOfHeight (0.3000f));
+    liveStatus->setBounds (getWidth() - 132, getHeight() - 100, 128, 94);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -91,7 +94,29 @@ void ZeroVideoOverlay::resized()
 bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
-	_DBG("ZeroVideoOverlay::keyPressed\n");
+	_DBG("ZeroVideoOverlay::keyPressed %d\n", key.getKeyCode());
+	if (key.getKeyCode() == ZEROMOTE_KEY_CONSOLE)
+	{
+		if (zeroConsole->getY() == 0)
+		{
+			zeroConsole->setTopLeftPosition(0, -(zeroConsole->getHeight() * 0.8));
+		}
+		else
+		{
+			zeroConsole->setTopLeftPosition(0, 0);
+		}
+	}
+
+	if (key.getKeyCode() == ZEROMOTE_KEY_STATUS)
+	{
+		status->setVisible(!status->isVisible());
+		if (status->isVisible())
+			status->toFront(false);
+	}
+	if (key.getKeyCode() == ZEROMOTE_KEY_LIVE)
+	{
+		liveStatus->setVisible(!liveStatus->isVisible());
+	}
     return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
 }
@@ -99,7 +124,6 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 bool ZeroVideoOverlay::keyStateChanged (bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
-	_DBG("ZeroVideoOverlay::keyStateChanged\n");
     return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }
@@ -107,28 +131,24 @@ bool ZeroVideoOverlay::keyStateChanged (bool isKeyDown)
 void ZeroVideoOverlay::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
-	_DBG("ZeroVideoOverlay::modifierKeysChanged\n");
     //[/UserCode_modifierKeysChanged]
 }
 
 void ZeroVideoOverlay::focusGained (FocusChangeType cause)
 {
     //[UserCode_focusGained] -- Add your code here...
-	_DBG("ZeroVideoOverlay::focusGained\n");
     //[/UserCode_focusGained]
 }
 
 void ZeroVideoOverlay::focusLost (FocusChangeType cause)
 {
     //[UserCode_focusLost] -- Add your code here...
-	_DBG("ZeroVideoOverlay::focusLost\n");
     //[/UserCode_focusLost]
 }
 
 void ZeroVideoOverlay::focusOfChildComponentChanged (FocusChangeType cause)
 {
     //[UserCode_focusOfChildComponentChanged] -- Add your code here...
-	_DBG("ZeroVideoOverlay::focusOfChildComponentChanged\n");
     //[/UserCode_focusOfChildComponentChanged]
 }
 
@@ -151,12 +171,6 @@ void ZeroVideoOverlay::vlcStopped()
 {
 
 }
-
-void ZeroVideoOverlay::setCommandManager(ZeroCommandManager *_zeroCommandManager)
-{
-	zeroCommandManager = _zeroCommandManager;
-	cameraControl->setCommandManager(_zeroCommandManager);
-}
 //[/MiscUserCode]
 
 
@@ -170,9 +184,10 @@ void ZeroVideoOverlay::setCommandManager(ZeroCommandManager *_zeroCommandManager
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroVideoOverlay" componentName=""
-                 parentClasses="public Component, public VLCEventCallback" constructorParams=""
-                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="1" initialWidth="320" initialHeight="200">
+                 parentClasses="public Component, public VLCEventCallback" constructorParams="ZeroCommandManager *_zeroCommandManager"
+                 variableInitialisers="zeroCommandManager(_zeroCommandManager)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="320" initialHeight="200">
   <METHODS>
     <METHOD name="keyStateChanged (bool isKeyDown)"/>
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
@@ -182,9 +197,18 @@ BEGIN_JUCER_METADATA
     <METHOD name="focusOfChildComponentChanged (FocusChangeType cause)"/>
   </METHODS>
   <BACKGROUND backgroundColour="0"/>
+  <JUCERCOMP name="" id="78ea4c3b5cca81d0" memberName="status" virtualName=""
+             explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroStatus.cpp"
+             constructorParams="zeroCommandManager"/>
   <JUCERCOMP name="" id="bd64555f2b9faa51" memberName="cameraControl" virtualName=""
              explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroXYComponent.cpp"
+             constructorParams="zeroCommandManager"/>
+  <JUCERCOMP name="" id="440e44faebb5a133" memberName="zeroConsole" virtualName=""
+             explicitFocusOrder="0" pos="0 0 0M 30%" sourceFile="ZeroConsole.cpp"
              constructorParams=""/>
+  <JUCERCOMP name="" id="25281c6779024c44" memberName="liveStatus" virtualName=""
+             explicitFocusOrder="0" pos="132R 100R 128 94" sourceFile="ZeroLiveStatus.cpp"
+             constructorParams="zeroCommandManager"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

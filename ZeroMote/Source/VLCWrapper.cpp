@@ -126,18 +126,12 @@ VLCWrapper::VLCWrapper ()
 	vlc_visor = new VisorVLC();
 	vlc_visor->setOpaque(true);
 	vlc_visor->addToDesktop(ComponentPeer::windowIsTemporary);
+
 	isLoadMedia = false;
 
-	const char * const vlc_args[] =
-	{
-		"-I",
-		"dummy",
-		"--no-video-title-show",
-		"--network-caching",
-		"30"
-	};
+	std::vector<const char*> argv = { "--network-caching","25" };
 
-	vlc_instan = libvlc_new (5, vlc_args);
+	vlc_instan = libvlc_new (argv.size(), argv.data());
 	vlc_mplayer = libvlc_media_player_new(vlc_instan);
 	vlc_event_manager = libvlc_media_player_event_manager(vlc_mplayer);
 }

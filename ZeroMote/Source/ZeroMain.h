@@ -20,7 +20,7 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "ZeroCommandManager.h"
 #include "VLCWrapper.h"
 #include "Zero.h"
 
@@ -33,7 +33,7 @@ class ZeroConfigDownloader : public Thread
 	public:
 		ZeroConfigDownloader(ZeroMain &_owner);
 		~ZeroConfigDownloader();
-		void setUrl(const String &_playUrl) { playUrl = _playUrl; }
+		void setUrl(const URL &_playUrl) { playUrl = _playUrl; }
 		void run();
 		const String &getConfig() { return downloadedData; }
 	private:
@@ -55,24 +55,26 @@ Describe your class and how it works here!
 */
 class ZeroMain  : public Component,
                   public AsyncUpdater,
-                  public Logger,
-                  public Button::Listener
+                  public ZeroCommandManager::Listener
 {
 public:
     //==============================================================================
-    ZeroMain (ZeroVideoOverlay *_overlay);
+    ZeroMain (ZeroVideoOverlay *_overlay, ZeroCommandManager *_zeroCommandManager);
     ~ZeroMain();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void handleAsyncUpdate();
-	void logMessage(const String &message);
+	void connectToRobot(const RemoteRobotItem &robot);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
     void moved() override;
+    bool keyPressed (const KeyPress& key) override;
+    bool keyStateChanged (bool isKeyDown) override;
+    void modifierKeysChanged (const ModifierKeys& modifiers) override;
+    void focusGained (FocusChangeType cause) override;
 
 
 
@@ -86,11 +88,6 @@ private:
 
     //==============================================================================
     ScopedPointer<VLCWrapper> vlc;
-    ScopedPointer<TextButton> btnPlay;
-    ScopedPointer<TextEditor> zeroUrl;
-    ScopedPointer<TextEditor> consoleOutput;
-    ScopedPointer<TextButton> btnI2CScan;
-    ScopedPointer<TextButton> btnReqHealth;
 
 
     //==============================================================================
