@@ -151,6 +151,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ZeroMovingStatus.cpp"/>
     <ClCompile Include="..\..\Source\ZeroLiveStatus.cpp"/>
     <ClCompile Include="..\..\Source\ZeroRobotList.cpp"/>
     <ClCompile Include="..\..\Source\ZeroStatus.cpp"/>
@@ -1286,6 +1287,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ZeroMovingStatus.h"/>
     <ClInclude Include="..\..\Source\ZeroLiveStatus.h"/>
     <ClInclude Include="..\..\Source\ZeroRobotList.h"/>
     <ClInclude Include="..\..\Source\ZeroStatus.h"/>

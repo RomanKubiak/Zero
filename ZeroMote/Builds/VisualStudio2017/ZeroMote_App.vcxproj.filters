@@ -211,6 +211,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ZeroMovingStatus.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\ZeroLiveStatus.cpp">
       <Filter>ZeroMote\Source</Filter>
     </ClCompile>
@@ -1458,6 +1461,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ZeroMovingStatus.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\ZeroLiveStatus.h">
       <Filter>ZeroMote\Source</Filter>
     </ClInclude>

@@ -131,6 +131,7 @@ bool ZeroMain::keyPressed (const KeyPress& key)
 bool ZeroMain::keyStateChanged (bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
+	_DBG("ZeroMain::keyStateChanged\n");
     return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }

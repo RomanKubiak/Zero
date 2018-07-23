@@ -20,16 +20,9 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "VLCWrapper.h"
-class ZeroCommandManager;
+#include "Zero.h"
 //[/Headers]
 
-#include "ZeroStatus.h"
-#include "ZeroXYComponent.h"
-#include "ZeroConsole.h"
-#include "ZeroLiveStatus.h"
-#include "ZeroMovingStatus.h"
 
 
 //==============================================================================
@@ -40,55 +33,38 @@ class ZeroCommandManager;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroVideoOverlay  : public Component,
-                          public VLCEventCallback,
-                          public Timer
+class ZeroMovingStatus  : public Component
 {
 public:
     //==============================================================================
-    ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager);
-    ~ZeroVideoOverlay();
+    ZeroMovingStatus ();
+    ~ZeroMovingStatus();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void vlcTimeChanged(int64_t newTime);
-	void vlcPaused();
-	void vlcStarted();
-	void vlcStopped();
-	void move(const KeyPress &key);
-	void timerCallback() override;
+	void setStatus(bool _up, bool _down, bool _left, bool _right, uint8_t _speed);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
-    bool keyPressed (const KeyPress& key) override;
-    bool keyStateChanged (bool isKeyDown) override;
-    void modifierKeysChanged (const ModifierKeys& modifiers) override;
-    void focusGained (FocusChangeType cause) override;
-    void focusLost (FocusChangeType cause) override;
-    void focusOfChildComponentChanged (FocusChangeType cause) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	ZeroCommandManager *zeroCommandManager;
-	bool movingForward, movingBackward, movingLeft, movingRight;
-	MovingSpeed movingSpeed;
-	PanningSpeed panningSpeed;
-	int speedLeft, speedRight;
+	bool up, down, left, right;
+	uint8_t speed;
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ZeroStatus> status;
-    ScopedPointer<ZeroXYComponent> cameraControl;
-    ScopedPointer<ZeroConsole> zeroConsole;
-    ScopedPointer<ZeroLiveStatus> liveStatus;
-    ScopedPointer<ZeroMovingStatus> movingStatus;
+    Path internalPath1;
+    Path internalPath2;
+    Path internalPath3;
+    Path internalPath4;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroVideoOverlay)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroMovingStatus)
 };
 
 //[EndFile] You can add extra defines here...

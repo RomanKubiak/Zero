@@ -66,6 +66,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ZeroMovingStatus_57d59b31.o \
   $(JUCE_OBJDIR)/ZeroLiveStatus_5d03ed4f.o \
   $(JUCE_OBJDIR)/ZeroRobotList_e59b97c1.o \
   $(JUCE_OBJDIR)/ZeroStatus_f5d1c543.o \
@@ -94,6 +95,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : check-pkg-config $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/ZeroMovingStatus_57d59b31.o: ../../Source/ZeroMovingStatus.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroMovingStatus.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ZeroLiveStatus_5d03ed4f.o: ../../Source/ZeroLiveStatus.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
