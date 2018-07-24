@@ -66,6 +66,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ZeroMoveControl_ba1276e5.o \
   $(JUCE_OBJDIR)/ZeroMovingStatus_57d59b31.o \
   $(JUCE_OBJDIR)/ZeroLiveStatus_5d03ed4f.o \
   $(JUCE_OBJDIR)/ZeroRobotList_e59b97c1.o \
@@ -78,6 +79,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/ZeroVideoOverlay_746c3e26.o \
   $(JUCE_OBJDIR)/ZeroMain_720f68a.o \
   $(JUCE_OBJDIR)/VLCWrapper_7f8e65ef.o \
+  $(JUCE_OBJDIR)/BinaryData_ce4232d4.o \
   $(JUCE_OBJDIR)/include_juce_core_f26d17db.o \
   $(JUCE_OBJDIR)/include_juce_data_structures_7471b1e3.o \
   $(JUCE_OBJDIR)/include_juce_events_fd7d695.o \
@@ -95,6 +97,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : check-pkg-config $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/ZeroMoveControl_ba1276e5.o: ../../Source/ZeroMoveControl.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ZeroMoveControl.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ZeroMovingStatus_57d59b31.o: ../../Source/ZeroMovingStatus.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
@@ -154,6 +161,11 @@ $(JUCE_OBJDIR)/ZeroMain_720f68a.o: ../../Source/ZeroMain.cpp
 $(JUCE_OBJDIR)/VLCWrapper_7f8e65ef.o: ../../Source/VLCWrapper.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling VLCWrapper.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling BinaryData.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_core_f26d17db.o: ../../JuceLibraryCode/include_juce_core.cpp

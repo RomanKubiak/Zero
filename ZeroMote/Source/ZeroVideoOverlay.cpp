@@ -44,7 +44,7 @@ ZeroVideoOverlay::ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager)
 	status->setVisible(false);
 	//cameraControl->setVisible(false);
 	liveStatus->setVisible(false);
-	speedLeft = speedRight = 0;
+	zeroMoveControl = new ZeroMoveControl(zeroCommandManager);
     //[/UserPreSize]
 
     setSize (320, 200);
@@ -52,9 +52,6 @@ ZeroVideoOverlay::ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager)
 
     //[Constructor] You can add your own custom stuff here..
 	cameraControl->setMouseClickGrabsKeyboardFocus(true);
-	movingForward = movingBackward = movingLeft = movingRight = false;
-	movingSpeed = MovingSpeed::walk;
-	panningSpeed = PanningSpeed::normal;
     //[/Constructor]
 }
 
@@ -101,7 +98,8 @@ void ZeroVideoOverlay::resized()
 bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
-	if (key.getKeyCode() == ZEROMOTE_KEY_CONSOLE)
+	_DBG("ZeroVideoOverlay::keyPressed\n");
+	if (zeroCommandManager->isConsoleToggle(key))
 	{
 		if (zeroConsole->getY() == 0)
 		{
@@ -112,29 +110,29 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 			zeroConsole->setTopLeftPosition(0, 0);
 		}
 	}
-
-	if (key.getKeyCode() == ZEROMOTE_KEY_STATUS)
+	else if (zeroCommandManager->isStatusToggle(key))
 	{
 		status->setVisible(!status->isVisible());
 		if (status->isVisible())
 			status->toFront(false);
 	}
-	if (key.getKeyCode() == ZEROMOTE_KEY_LIVE)
+	else if (zeroCommandManager->isLiveToggle(key))
 	{
 		liveStatus->setVisible(!liveStatus->isVisible());
 	}
-	move(key);
-    return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+	else
+	{
+		zeroMoveControl->keyPressed(key);
+	}
+	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
 }
 
 bool ZeroVideoOverlay::keyStateChanged (bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
-	movingForward	= KeyPress::isKeyCurrentlyDown(ZEROMOTE_KEY_FORWARD);
-	movingBackward	= KeyPress::isKeyCurrentlyDown(ZEROMOTE_KEY_BACKWARD);
-	movingLeft		= KeyPress::isKeyCurrentlyDown(ZEROMOTE_KEY_LEFT);
-	movingRight		= KeyPress::isKeyCurrentlyDown(ZEROMOTE_KEY_RIGHT);
+	zeroMoveControl->keyStateChanged();
+
     return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }
@@ -172,67 +170,21 @@ void ZeroVideoOverlay::vlcTimeChanged(int64_t newTime)
 
 void ZeroVideoOverlay::vlcPaused()
 {
-	stopTimer();
+	zeroMoveControl->stopTimer();
 }
 void ZeroVideoOverlay::vlcStarted()
 {
-	startTimerHz(15);
+	zeroMoveControl->startTimerHz(15);
 }
 void ZeroVideoOverlay::vlcStopped()
 {
-	stopTimer();
+	zeroMoveControl->stopTimer();
 }
 
-void ZeroVideoOverlay::move(const KeyPress &key)
+void ZeroVideoOverlay::changeListenerCallback(ChangeBroadcaster *b)
 {
-	if (key.getModifiers().testFlags(ZEROMOTE_SPEED_CHANGE))
-	{
-	}
-
-	switch (key.getKeyCode())
-	{
-		case ZEROMOTE_KEY_FORWARD:
-			movingForward = key.isCurrentlyDown();
-			break;
-		case ZEROMOTE_KEY_BACKWARD:
-			movingBackward = key.isCurrentlyDown();
-			break;
-		case ZEROMOTE_KEY_LEFT:
-			movingLeft = key.isCurrentlyDown();
-			break;
-		case ZEROMOTE_KEY_RIGHT:
-			movingRight = key.isCurrentlyDown();
-			break;
-		default:
-			break;
-	}
-}
-
-void ZeroVideoOverlay::timerCallback()
-{
-	//_DBG("fwd:%d bwd:%d lft:%d rgt:%d spd:%d\n", movingForward, movingBackward, movingLeft, movingRight, (uint8_t)movingSpeed);
-	movingStatus->setStatus(movingForward, movingBackward, movingLeft, movingRight, (uint8_t)movingSpeed);
-	movingStatus->repaint();
-
-
-	if (movingForward)
-	{
-		zeroCommandManager->setMotors(128, 128);
-		speedLeft = speedRight = 128;
-	}
-
-	if (movingBackward)
-	{
-		zeroCommandManager->setMotors(-128, -128);
-		speedLeft = speedRight = -128;
-	}
-
-	if (!movingForward && !movingBackward && !movingLeft && !movingRight)
-	{
-		if (speedLeft || speedRight)
-			zeroCommandManager->setMotors(0, 0);
-		speedLeft = speedRight = 0;
-	}
+	if (b == zeroMoveControl.get())
+		movingStatus->repaint();
 }
 //[/MiscUserCode]
 
@@ -247,7 +199,7 @@ void ZeroVideoOverlay::timerCallback()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroVideoOverlay" componentName=""
-                 parentClasses="public Component, public VLCEventCallback, public Timer"
+                 parentClasses="public Component, public VLCEventCallback, public ChangeListener"
                  constructorParams="ZeroCommandManager *_zeroCommandManager" variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="320" initialHeight="200">

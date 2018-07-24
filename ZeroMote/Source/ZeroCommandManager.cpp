@@ -15,6 +15,11 @@ ZeroCommandManager::ZeroCommandManager()
 {
 	writeBuffer = (char *)malloc(CONFIG_MPACK_WRITER_BUFFER);
 	udpSocket = new DatagramSocket(false);
+
+	if (!JSON::parse(String(BinaryData::keymap_json, BinaryData::keymap_jsonSize), keymap).wasOk())
+	{
+		Logger::writeToLog("can't parse keymap");
+	}
 }
 
 ZeroCommandManager::~ZeroCommandManager()
@@ -122,4 +127,29 @@ void ZeroCommandManager::connectToRobot(const RemoteRobotItem &robot)
 	{
 		listeners.getListeners()[i]->connectToRobot(robot);
 	}
+}
+
+bool ZeroCommandManager::isStatusToggle(const KeyPress &key)
+{
+	DynamicObject *o = keymap.getDynamicObject();
+	if (o)
+	{
+		_DBG("top size: %d\n", o->getProperties().size());
+		var live_status = o->getProperty("live_status");
+		if (live_status.getDynamicObject())
+		{
+			_DBG("  live_status size: %d\n", live_status.getDynamicObject()->getProperties().size());
+		}
+	}
+	return (false);
+}
+
+bool ZeroCommandManager::isLiveToggle(const KeyPress &key)
+{
+	return (false);
+}
+
+bool ZeroCommandManager::isConsoleToggle(const KeyPress &key)
+{
+	return (false);
 }

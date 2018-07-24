@@ -12,33 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-#define ZEROMOTE_KEY_CONSOLE	96
-#define ZEROMOTE_KEY_STATUS		9
-#define ZEROMOTE_KEY_LIVE		65648
-#define ZEROMOTE_KEY_FORWARD	87
-#define ZEROMOTE_KEY_BACKWARD	83
-#define ZEROMOTE_KEY_RIGHT		68
-#define ZEROMOTE_KEY_LEFT		65
-#define ZEROMOTE_SPEED_CHANGE	ModifierKeys::Flags::shiftModifier
-
-enum MovingSpeed
-{
-	stopped,
-	crawl,
-	walk,
-	pace,
-	run,
-	crazy
-};
-
-enum PanningSpeed
-{
-	slow,
-	normal,
-	faster,
-	berserk
-};
-
 struct RemoteRobotItem
 {
 	RemoteRobotItem() : name(String::empty) {}

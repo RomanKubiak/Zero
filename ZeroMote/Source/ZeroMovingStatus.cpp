@@ -68,7 +68,7 @@ void ZeroMovingStatus::paint (Graphics& g)
         Colour fillColour = Colour (0x80ffffff);
         Colour strokeColour = Colours::white;
         //[UserPaintCustomArguments] Customize the painting arguments here..
-		fillColour = up ? on : off;
+    		fillColour = up ? on : off;
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillPath (internalPath1, AffineTransform::translation(x, y));
@@ -81,7 +81,7 @@ void ZeroMovingStatus::paint (Graphics& g)
         Colour fillColour = Colour (0x80ffffff);
         Colour strokeColour = Colours::white;
         //[UserPaintCustomArguments] Customize the painting arguments here..
-		fillColour = right ? on : off;
+    		fillColour = right ? on : off;
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillPath (internalPath2, AffineTransform::translation(x, y));
@@ -94,7 +94,7 @@ void ZeroMovingStatus::paint (Graphics& g)
         Colour fillColour = Colour (0x80ffffff);
         Colour strokeColour = Colours::white;
         //[UserPaintCustomArguments] Customize the painting arguments here..
-		fillColour = down ? on : off;
+    		fillColour = down ? on : off;
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillPath (internalPath3, AffineTransform::translation(x, y));
@@ -107,7 +107,7 @@ void ZeroMovingStatus::paint (Graphics& g)
         Colour fillColour = Colour (0x80ffffff);
         Colour strokeColour = Colours::white;
         //[UserPaintCustomArguments] Customize the painting arguments here..
-		fillColour = left ? on : off;
+    		fillColour = left ? on : off;
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillPath (internalPath4, AffineTransform::translation(x, y));

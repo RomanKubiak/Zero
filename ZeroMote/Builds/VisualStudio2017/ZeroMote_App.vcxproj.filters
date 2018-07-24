@@ -211,6 +211,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ZeroMoveControl.cpp">
+      <Filter>ZeroMote\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\ZeroMovingStatus.cpp">
       <Filter>ZeroMote\Source</Filter>
     </ClCompile>
@@ -1441,6 +1444,9 @@
     <ClCompile Include="..\..\..\..\ctrlr\JUCE\modules\juce_gui_extra\juce_gui_extra.mm">
       <Filter>Juce Modules\juce_gui_extra</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_core.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
@@ -1461,6 +1467,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ZeroMoveControl.h">
+      <Filter>ZeroMote\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\ZeroMovingStatus.h">
       <Filter>ZeroMote\Source</Filter>
     </ClInclude>
@@ -2646,11 +2655,17 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\keymap.json">
+      <Filter>ZeroMote\Source</Filter>
+    </None>
     <None Include="..\..\..\..\ctrlr\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt">
       <Filter>Juce Modules\juce_graphics\image_formats\jpglib</Filter>
     </None>

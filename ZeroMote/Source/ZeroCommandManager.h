@@ -39,6 +39,9 @@ class ZeroCommandManager
 		};
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
 
+		bool isStatusToggle(const KeyPress &key);
+		bool isLiveToggle(const KeyPress &key);
+		bool isConsoleToggle(const KeyPress &key);
 	private:
 		bool isActive;
 		void writeAuthCode();
@@ -49,4 +52,5 @@ class ZeroCommandManager
 		int neuralPort;
 		String neuralHost;
 		ListenerList <Listener> listeners;
+		var keymap;
 };

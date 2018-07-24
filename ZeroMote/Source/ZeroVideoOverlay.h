@@ -22,6 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "VLCWrapper.h"
+#include "ZeroMoveControl.h"
 class ZeroCommandManager;
 //[/Headers]
 
@@ -42,7 +43,7 @@ class ZeroCommandManager;
 */
 class ZeroVideoOverlay  : public Component,
                           public VLCEventCallback,
-                          public Timer
+                          public ChangeListener
 {
 public:
     //==============================================================================
@@ -55,8 +56,7 @@ public:
 	void vlcPaused();
 	void vlcStarted();
 	void vlcStopped();
-	void move(const KeyPress &key);
-	void timerCallback() override;
+	void changeListenerCallback(ChangeBroadcaster *b);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -73,10 +73,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	ZeroCommandManager *zeroCommandManager;
-	bool movingForward, movingBackward, movingLeft, movingRight;
-	MovingSpeed movingSpeed;
-	PanningSpeed panningSpeed;
-	int speedLeft, speedRight;
+	ScopedPointer <ZeroMoveControl> zeroMoveControl;
     //[/UserVariables]
 
     //==============================================================================

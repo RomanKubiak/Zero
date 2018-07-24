@@ -84,6 +84,7 @@ private:
 	ZeroCommandManager *zeroCommandManager;
 	ScopedPointer<ZeroConfigDownloader> zeroConfigDownloader;
 	var jsonConfig;
+	ScopedPointer <ApplicationCommandManager> appManager;
     //[/UserVariables]
 
     //==============================================================================
