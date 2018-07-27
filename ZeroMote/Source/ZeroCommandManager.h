@@ -14,14 +14,14 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Zero.h"
 
-class ZeroCommandManager
+class ZeroCommandManager : public Thread
 {
 	public:
 		ZeroCommandManager();
 		~ZeroCommandManager();
 		void setCameraPan(int16_t angle, bool is_relative=false);
 		void setCameraTilt(int16_t angle, bool is_relative=false);
-
+		void run();
 		void setNeuralHost(const String &_neuralHost) { neuralHost = _neuralHost;  }
 		void setNeuralPort(const int &_neuralPort) { neuralPort = _neuralPort;  }
 		void requestI2CScan();
@@ -38,10 +38,7 @@ class ZeroCommandManager
 				virtual void connectToRobot(const RemoteRobotItem &robot) {}
 		};
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
-
-		bool isStatusToggle(const KeyPress &key);
-		bool isLiveToggle(const KeyPress &key);
-		bool isConsoleToggle(const KeyPress &key);
+		String getCodeForAction(const Identifier &actionId);
 	private:
 		bool isActive;
 		void writeAuthCode();

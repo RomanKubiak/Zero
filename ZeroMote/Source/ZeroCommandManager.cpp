@@ -10,16 +10,18 @@
 
 #include "ZeroCommandManager.h"
 
-ZeroCommandManager::ZeroCommandManager() 
-	: writeBuffer(nullptr), writeBufferSize(0), isActive(false)
+ZeroCommandManager::ZeroCommandManager()
+	: writeBuffer(nullptr), writeBufferSize(0), isActive(false), Thread("network thread")
 {
 	writeBuffer = (char *)malloc(CONFIG_MPACK_WRITER_BUFFER);
 	udpSocket = new DatagramSocket(false);
+	udpSocket->bindToPort(0);
 
 	if (!JSON::parse(String(BinaryData::keymap_json, BinaryData::keymap_jsonSize), keymap).wasOk())
 	{
 		Logger::writeToLog("can't parse keymap");
 	}
+	startThread();
 }
 
 ZeroCommandManager::~ZeroCommandManager()
@@ -129,27 +131,45 @@ void ZeroCommandManager::connectToRobot(const RemoteRobotItem &robot)
 	}
 }
 
-bool ZeroCommandManager::isStatusToggle(const KeyPress &key)
+String ZeroCommandManager::getCodeForAction(const Identifier &actionId)
 {
 	DynamicObject *o = keymap.getDynamicObject();
 	if (o)
 	{
-		_DBG("top size: %d\n", o->getProperties().size());
-		var live_status = o->getProperty("live_status");
-		if (live_status.getDynamicObject())
+		var action = o->getProperty(actionId);
+		if (action.getDynamicObject())
 		{
-			_DBG("  live_status size: %d\n", live_status.getDynamicObject()->getProperties().size());
+			return (action.getDynamicObject()->getProperty("code"));
 		}
 	}
-	return (false);
+	return (String::empty);
 }
 
-bool ZeroCommandManager::isLiveToggle(const KeyPress &key)
+void ZeroCommandManager::run()
 {
-	return (false);
-}
+	MemoryBlock readBuffer(1024);
+	while (int ret = udpSocket->waitUntilReady(true, 500))
+	{
+		if (ret == -1)
+		{
+			_ERR("udp socket error");
+			return;
+		}
 
-bool ZeroCommandManager::isConsoleToggle(const KeyPress &key)
-{
-	return (false);
+		if (threadShouldExit())
+		{
+			_DBG("network thread exiting");
+			return;
+		}
+
+		if (ret == 1)
+		{
+			_DBG("socket ready for reading");
+			const int readSize = udpSocket->read(readBuffer.getData(), readBuffer.getSize(), true);
+			if (readSize > 0)
+			{
+				_DBG("got %d bytes of data", readSize);
+			}
+		}
+	}
 }

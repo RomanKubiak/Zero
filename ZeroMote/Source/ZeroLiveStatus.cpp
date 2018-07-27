@@ -92,9 +92,27 @@ void ZeroLiveStatus::resized()
     //[/UserResized]
 }
 
+void ZeroLiveStatus::visibilityChanged()
+{
+    //[UserCode_visibilityChanged] -- Add your code here...
+	if (isVisible())
+	{
+		startTimerHz(10);
+	}
+	else
+	{
+		stopTimer();
+	}
+    //[/UserCode_visibilityChanged]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ZeroLiveStatus::timerCallback()
+{
+	zeroCommandManager->requestHealth();
+}
 //[/MiscUserCode]
 
 
@@ -108,10 +126,13 @@ void ZeroLiveStatus::resized()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroLiveStatus" componentName=""
-                 parentClasses="public Component" constructorParams="ZeroCommandManager *_zeroCommandManager"
+                 parentClasses="public Component, public Timer" constructorParams="ZeroCommandManager *_zeroCommandManager"
                  variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="128" initialHeight="100">
+  <METHODS>
+    <METHOD name="visibilityChanged()"/>
+  </METHODS>
   <BACKGROUND backgroundColour="66000000"/>
   <LABEL name="new label" id="1089af106cfca5eb" memberName="label" virtualName=""
          explicitFocusOrder="0" pos="0 0 0M 0M" edTextCol="ff000000" edBkgCol="0"

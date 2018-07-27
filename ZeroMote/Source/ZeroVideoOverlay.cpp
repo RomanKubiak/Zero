@@ -98,8 +98,7 @@ void ZeroVideoOverlay::resized()
 bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
-	_DBG("ZeroVideoOverlay::keyPressed\n");
-	if (zeroCommandManager->isConsoleToggle(key))
+	if (zeroCommandManager->getCodeForAction("console").equalsIgnoreCase(key.getTextDescription()))
 	{
 		if (zeroConsole->getY() == 0)
 		{
@@ -110,13 +109,13 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 			zeroConsole->setTopLeftPosition(0, 0);
 		}
 	}
-	else if (zeroCommandManager->isStatusToggle(key))
+	else if (zeroCommandManager->getCodeForAction("options").equalsIgnoreCase(key.getTextDescription()))
 	{
 		status->setVisible(!status->isVisible());
 		if (status->isVisible())
 			status->toFront(false);
 	}
-	else if (zeroCommandManager->isLiveToggle(key))
+	else if (zeroCommandManager->getCodeForAction("live_status").equalsIgnoreCase(key.getTextDescription()))
 	{
 		liveStatus->setVisible(!liveStatus->isVisible());
 	}

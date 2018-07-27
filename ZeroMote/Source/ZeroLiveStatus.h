@@ -34,7 +34,8 @@ class ZeroCommandManager;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroLiveStatus  : public Component
+class ZeroLiveStatus  : public Component,
+                        public Timer
 {
 public:
     //==============================================================================
@@ -43,10 +44,12 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void timerCallback() override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
+    void visibilityChanged() override;
 
 
 
