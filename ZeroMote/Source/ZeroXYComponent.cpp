@@ -198,25 +198,25 @@ void ZeroXYComponent::timerCallback()
 	{
 		if (lastDistanceX > 10) // pan right
 		{
-			_DBG("pan right %d\n", lastDistanceX);
-			zeroCommandManager->setCameraPan(1, true);
+			_DBG("XY: pan right %d", lastDistanceX);
+			zeroCommandManager->setCameraPan(-1, true);
 		}
 		if (lastDistanceX < -10) // pan left
 		{
-			_DBG("pan left %d\n", lastDistanceX);
-			zeroCommandManager->setCameraPan(-1, true);
+			_DBG("XY: pan left %d", lastDistanceX);
+			zeroCommandManager->setCameraPan(1, true);
 		}
 
 		if (lastDistanceY > 10)
 		{
-			_DBG("tilt down %d\n", lastDistanceY);
-			zeroCommandManager->setCameraTilt(-1, true);
+			_DBG("XY: tilt down %d", lastDistanceY);
+			zeroCommandManager->setCameraTilt(1, true);
 		}
 
 		if (lastDistanceY < -10)
 		{
-			_DBG("tilt up %d\n", lastDistanceY);
-			zeroCommandManager->setCameraTilt(1, true);
+			_DBG("XY: tilt up %d", lastDistanceY);
+			zeroCommandManager->setCameraTilt(-1, true);
 		}
 	}
 }

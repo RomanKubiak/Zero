@@ -34,17 +34,16 @@ ZeroVideoOverlay::ZeroVideoOverlay (ZeroCommandManager *_zeroCommandManager)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (status = new ZeroStatus (zeroCommandManager));
     addAndMakeVisible (cameraControl = new ZeroXYComponent (zeroCommandManager));
+    addAndMakeVisible (status = new ZeroStatus (zeroCommandManager));
     addAndMakeVisible (zeroConsole = new ZeroConsole());
     addAndMakeVisible (liveStatus = new ZeroLiveStatus (zeroCommandManager));
-    addAndMakeVisible (movingStatus = new ZeroMovingStatus());
+    addAndMakeVisible (movingStatus = new ZeroMovingStatus (zeroCommandManager));
+    addAndMakeVisible (actionBar = new ZeroActionBar (zeroCommandManager));
 
     //[UserPreSize]
 	status->setVisible(false);
-	//cameraControl->setVisible(false);
 	liveStatus->setVisible(false);
-	zeroMoveControl = new ZeroMoveControl(zeroCommandManager);
     //[/UserPreSize]
 
     setSize (320, 200);
@@ -60,11 +59,12 @@ ZeroVideoOverlay::~ZeroVideoOverlay()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    status = nullptr;
     cameraControl = nullptr;
+    status = nullptr;
     zeroConsole = nullptr;
     liveStatus = nullptr;
     movingStatus = nullptr;
+    actionBar = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -86,11 +86,12 @@ void ZeroVideoOverlay::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    status->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     cameraControl->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    status->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     zeroConsole->setBounds (0, 0, getWidth() - 0, proportionOfHeight (0.3000f));
     liveStatus->setBounds (getWidth() - 132, getHeight() - 100, 128, 94);
     movingStatus->setBounds (8, getHeight() - 108, 100, 100);
+    actionBar->setBounds (110, getHeight() - 32, proportionOfWidth (0.5000f), 30);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -119,9 +120,13 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 	{
 		liveStatus->setVisible(!liveStatus->isVisible());
 	}
+	else if (zeroCommandManager->getCodeForAction("action_bar").equalsIgnoreCase(key.getTextDescription()))
+	{
+		actionBar->setVisible(!actionBar->isVisible());
+	}
 	else
 	{
-		zeroMoveControl->keyPressed(key);
+		movingStatus->keyPressed(key);
 	}
 	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
@@ -130,8 +135,7 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 bool ZeroVideoOverlay::keyStateChanged (bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
-	zeroMoveControl->keyStateChanged();
-
+	movingStatus->keyStateChanged(isKeyDown);
     return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }
@@ -169,21 +173,16 @@ void ZeroVideoOverlay::vlcTimeChanged(int64_t newTime)
 
 void ZeroVideoOverlay::vlcPaused()
 {
-	zeroMoveControl->stopTimer();
 }
 void ZeroVideoOverlay::vlcStarted()
 {
-	zeroMoveControl->startTimerHz(15);
 }
 void ZeroVideoOverlay::vlcStopped()
 {
-	zeroMoveControl->stopTimer();
 }
 
 void ZeroVideoOverlay::changeListenerCallback(ChangeBroadcaster *b)
 {
-	if (b == zeroMoveControl.get())
-		movingStatus->repaint();
 }
 //[/MiscUserCode]
 
@@ -211,11 +210,11 @@ BEGIN_JUCER_METADATA
     <METHOD name="focusOfChildComponentChanged (FocusChangeType cause)"/>
   </METHODS>
   <BACKGROUND backgroundColour="0"/>
-  <JUCERCOMP name="" id="78ea4c3b5cca81d0" memberName="status" virtualName=""
-             explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroStatus.cpp"
-             constructorParams="zeroCommandManager"/>
   <JUCERCOMP name="" id="bd64555f2b9faa51" memberName="cameraControl" virtualName=""
              explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroXYComponent.cpp"
+             constructorParams="zeroCommandManager"/>
+  <JUCERCOMP name="" id="78ea4c3b5cca81d0" memberName="status" virtualName=""
+             explicitFocusOrder="0" pos="0 0 0M 0M" sourceFile="ZeroStatus.cpp"
              constructorParams="zeroCommandManager"/>
   <JUCERCOMP name="" id="440e44faebb5a133" memberName="zeroConsole" virtualName=""
              explicitFocusOrder="0" pos="0 0 0M 30%" sourceFile="ZeroConsole.cpp"
@@ -225,7 +224,10 @@ BEGIN_JUCER_METADATA
              constructorParams="zeroCommandManager"/>
   <JUCERCOMP name="" id="32b80931dd9a5d8c" memberName="movingStatus" virtualName=""
              explicitFocusOrder="0" pos="8 108R 100 100" sourceFile="ZeroMovingStatus.cpp"
-             constructorParams=""/>
+             constructorParams="zeroCommandManager"/>
+  <JUCERCOMP name="" id="d87d1da47e849cdf" memberName="actionBar" virtualName=""
+             explicitFocusOrder="0" pos="110 32R 50% 30" sourceFile="ZeroActionBar.cpp"
+             constructorParams="zeroCommandManager"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

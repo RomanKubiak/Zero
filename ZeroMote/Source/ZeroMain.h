@@ -35,10 +35,12 @@ class ZeroConfigDownloader : public Thread
 		~ZeroConfigDownloader();
 		void setUrl(const URL &_playUrl) { playUrl = _playUrl; }
 		void run();
+		static bool streamProgress(void *context, int bytesSent, int totalBytes);
 		const String &getConfig() { return downloadedData; }
 	private:
 		ZeroMain &owner;
 		URL playUrl;
+		ScopedPointer<InputStream> jsonConfigInputStream;
 		String downloadedData;
 };
 //[/Headers]

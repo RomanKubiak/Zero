@@ -24,10 +24,12 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+#include "ZeroCommandManager.h"
 //[/MiscUserDefs]
 
 //==============================================================================
-ZeroMovingStatus::ZeroMovingStatus ()
+ZeroMovingStatus::ZeroMovingStatus (ZeroCommandManager *_zeroCommandManager)
+    : zeroCommandManager(_zeroCommandManager)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -41,6 +43,7 @@ ZeroMovingStatus::ZeroMovingStatus ()
 
 
     //[Constructor] You can add your own custom stuff here..
+	startTimerHz(10);
     //[/Constructor]
 }
 
@@ -163,6 +166,37 @@ void ZeroMovingStatus::setStatus(bool _up, bool _down, bool _left, bool _right, 
 	right = _right;
 	speed = _speed;
 }
+
+void ZeroMovingStatus::changeListenerCallback(ChangeBroadcaster *b)
+{
+}
+
+void ZeroMovingStatus::timerCallback()
+{
+	repaint();
+}
+
+bool ZeroMovingStatus::keyPressed (const KeyPress& key)
+{
+	//[UserCode_keyPressed] -- Add your code here...
+	up = zeroCommandManager->getCodeForAction("up").equalsIgnoreCase(key.getTextDescription());
+	down = zeroCommandManager->getCodeForAction("down").equalsIgnoreCase(key.getTextDescription());
+	left = zeroCommandManager->getCodeForAction("left").equalsIgnoreCase(key.getTextDescription());
+	right = zeroCommandManager->getCodeForAction("right").equalsIgnoreCase(key.getTextDescription());
+	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+				   //[/UserCode_keyPressed]
+}
+
+bool ZeroMovingStatus::keyStateChanged (bool isKeyDown)
+{
+	//[UserCode_keyStateChanged] -- Add your code here...
+	up = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("up")).getKeyCode());
+	down = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("down")).getKeyCode());
+	left = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("left")).getKeyCode());
+	right = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("right")).getKeyCode());
+	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+				   //[/UserCode_keyStateChanged]
+}
 //[/MiscUserCode]
 
 
@@ -176,7 +210,8 @@ void ZeroMovingStatus::setStatus(bool _up, bool _down, bool _left, bool _right, 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroMovingStatus" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
+                 parentClasses="public Component, public ChangeListener, public Timer"
+                 constructorParams="ZeroCommandManager *_zeroCommandManager" variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="400" initialHeight="400">
   <BACKGROUND backgroundColour="0">

@@ -11,22 +11,57 @@
 #include "ZeroCommandManager.h"
 
 ZeroCommandManager::ZeroCommandManager()
-	: writeBuffer(nullptr), writeBufferSize(0), isActive(false), Thread("network thread")
+	: writeBuffer(nullptr), writeBufferSize(0), 
+	is_connected(false), isActive(false), Thread("network thread")
 {
 	writeBuffer = (char *)malloc(CONFIG_MPACK_WRITER_BUFFER);
-	udpSocket = new DatagramSocket(false);
-	udpSocket->bindToPort(0);
+	netSocket = new StreamingSocket();
+	netSocket->bindToPort(0);
+	File f("c:\\devel\\Zero\\ZeroMote\\keymap.json");
+	var keymapfile;
+	Result ret = JSON::parse (f.loadFileAsString(), keymapfile);
 
-	if (!JSON::parse(String(BinaryData::keymap_json, BinaryData::keymap_jsonSize), keymap).wasOk())
+	if (!ret.wasOk())
 	{
-		Logger::writeToLog("can't parse keymap");
+		AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Keymap parser", "Can't parse json: " + ret.getErrorMessage());
 	}
-	startThread();
+	else
+	{
+		keymap = keymapfile.getProperty("keymap", var::null);
+	}
+	
 }
 
 ZeroCommandManager::~ZeroCommandManager()
 {
+	stopThread(1500);
+	netSocket->close();
 	free(writeBuffer);
+}
+
+bool ZeroCommandManager::setActive(bool _isActive)
+{
+	isActive = _isActive;
+	_DBG("ZeroCommandManager::setActive");
+	if (netSocket)
+	{
+		if (netSocket->isConnected())
+		{
+			netSocket->close();
+		}
+		
+		is_connected = netSocket->connect(neuralHost, neuralPort, 1000);
+		if (is_connected)
+			startThread();
+		
+		return (is_connected);
+	}
+	else
+	{
+		_ERR("no socket created");
+		stopThread(1500);
+		return (false);
+	}
 }
 
 void ZeroCommandManager::setCameraPan(int16_t angle, bool is_relative)
@@ -41,7 +76,7 @@ void ZeroCommandManager::setCameraPan(int16_t angle, bool is_relative)
 	mpack_write_i16(&writer, angle);
 	mpack_write_bool(&writer, is_relative);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 void ZeroCommandManager::setCameraTilt(int16_t angle, bool is_relative)
 {
@@ -55,7 +90,7 @@ void ZeroCommandManager::setCameraTilt(int16_t angle, bool is_relative)
 	mpack_write_i16(&writer, angle);
 	mpack_write_bool(&writer, is_relative);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::requestI2CScan()
@@ -66,7 +101,8 @@ void ZeroCommandManager::requestI2CScan()
 	mpack_start_array(&writer, 1);
 	mpack_write_u8(&writer, MSG_I2C_SCAN);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	int w = netSocket->write((void *)writeBuffer, writeBufferSize);
+	_DBG("writtren %d bytes to socket", w);
 }
 
 void ZeroCommandManager::writeAuthCode()
@@ -84,7 +120,7 @@ void ZeroCommandManager::requestHealth()
 	mpack_start_array(&writer, 1);
 	mpack_write_u8(&writer, MSG_HEALTH_UPDATE);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::setRemoteMode()
@@ -95,7 +131,7 @@ void ZeroCommandManager::setRemoteMode()
 	mpack_start_array(&writer, 1);
 	mpack_write_u8(&writer, MSG_MODE_REMOTE);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::setLocalMode()
@@ -106,7 +142,7 @@ void ZeroCommandManager::setLocalMode()
 	mpack_start_array(&writer, 1);
 	mpack_write_u8(&writer, MSG_MODE_LOCAL);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::setMotors(int16_t left, int16_t right)
@@ -120,7 +156,7 @@ void ZeroCommandManager::setMotors(int16_t left, int16_t right)
 	mpack_write_i16(&writer, (int16_t)left);
 	mpack_write_i16(&writer, (int16_t)right);
 	mpack_writer_destroy(&writer);
-	udpSocket->write(neuralHost, neuralPort, (void *)writeBuffer, writeBufferSize);
+	netSocket->write((void *)writeBuffer, writeBufferSize);
 }
 
 void ZeroCommandManager::connectToRobot(const RemoteRobotItem &robot)
@@ -145,31 +181,58 @@ String ZeroCommandManager::getCodeForAction(const Identifier &actionId)
 	return (String::empty);
 }
 
+void ZeroCommandManager::updateLiveData(mpack_reader_t *reader)
+{
+	current_status.current_draw = mpack_expect_uint(reader);
+	current_status.azimuth_body = mpack_expect_uint(reader);
+	current_status.battery_mv   = mpack_expect_uint(reader);
+}
+
+void ZeroCommandManager::handleAsyncUpdate()
+{
+	mpack_reader_t reader;
+	ScopedLock sl(mpackData.getLock());
+	const int size = mpackData.size();
+	for (int i = 0; i < size; i++)
+	{
+		MemoryBlock bl = mpackData[i];
+		mpack_reader_init_data(&reader, (const char *)bl.getData(), bl.getSize());
+		if (mpack_expect_array(&reader) > 0)
+		{
+			updateLiveData(&reader);
+		}
+	}
+	mpackData.clear();
+
+	for (int i = 0; i < listeners.size(); i++)
+	{
+		listeners.getListeners()[i]->liveDataUpdated();
+	}
+}
+
 void ZeroCommandManager::run()
 {
-	MemoryBlock readBuffer(1024);
-	while (int ret = udpSocket->waitUntilReady(true, 500))
+	while (true)
 	{
+		int ret = netSocket->waitUntilReady(true, 500);
 		if (ret == -1)
 		{
-			_ERR("udp socket error");
 			return;
 		}
 
 		if (threadShouldExit())
 		{
-			_DBG("network thread exiting");
 			return;
 		}
 
 		if (ret == 1)
 		{
-			_DBG("socket ready for reading");
-			const int readSize = udpSocket->read(readBuffer.getData(), readBuffer.getSize(), true);
-			if (readSize > 0)
-			{
-				_DBG("got %d bytes of data", readSize);
-			}
+			MemoryBlock readBuffer(512);
+			const int readSize = netSocket->read(readBuffer.getData(), readBuffer.getSize(), false);
+			readBuffer.setSize(readSize, false);
+			ScopedLock sl(mpackData.getLock());
+			mpackData.add(readBuffer);
+			triggerAsyncUpdate();
 		}
 	}
 }

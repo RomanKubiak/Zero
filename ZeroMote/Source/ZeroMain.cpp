@@ -38,18 +38,27 @@ ZeroConfigDownloader::~ZeroConfigDownloader()
 		stopThread(500);
 }
 
+bool ZeroConfigDownloader::streamProgress(void *context, int bytesSent, int totalBytes)
+{
+	return true;
+}
+
 void ZeroConfigDownloader::run()
 {
-	downloadedData = playUrl.readEntireTextStream(false);
+	if (jsonConfigInputStream.get())
+		delete (jsonConfigInputStream.release());
 
-	if (downloadedData.isEmpty())
+	jsonConfigInputStream = playUrl.createInputStream(false, &ZeroConfigDownloader::streamProgress, this, String::empty, 500);
+
+	if (jsonConfigInputStream == nullptr)
 	{
-		_ERR("Failed to download config data from: " + playUrl.toString(true) + "\n");
-		owner.triggerAsyncUpdate();
+		_ERR("Failed to create input stream from URL: " + playUrl.toString(true));
+		return;
 	}
-	else
+
+	downloadedData = jsonConfigInputStream->readEntireStreamAsString();
+	if (downloadedData.length() != 0)
 	{
-		_DBG("Download config data, size:%d", downloadedData.length());
 		owner.triggerAsyncUpdate();
 	}
 }
@@ -166,12 +175,21 @@ void ZeroMain::handleAsyncUpdate()
 		}
 		else
 		{
-			zeroCommandManager->setNeuralHost(jsonConfig.getDynamicObject()->getProperty("neural_host"));
-			zeroCommandManager->setNeuralPort(jsonConfig.getDynamicObject()->getProperty("neural_port"));
-			vlc->loadMedia(jsonConfig.getDynamicObject()->getProperty("video_url"));
-			vlc->play();
-			zeroCommandManager->setActive(true);
-			zeroCommandManager->setRemoteMode();
+			const String host = jsonConfig.getDynamicObject()->getProperty("neural_host").toString();
+			uint16_t port = jsonConfig.getDynamicObject()->getProperty("neural_port").toString().getIntValue();
+			zeroCommandManager->setNeuralHost(host);
+			zeroCommandManager->setNeuralPort(port);
+			if (zeroCommandManager->setActive(true))
+			{
+				vlc->loadMedia(jsonConfig.getDynamicObject()->getProperty("video_url"));
+				vlc->play();
+				zeroCommandManager->setRemoteMode();
+				_DBG("connected to remote RPC host");
+			}
+			else
+			{
+				_ERR("Can't connect to RPC port");
+			}
 		}
 	}
 	else

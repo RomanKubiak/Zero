@@ -36,16 +36,20 @@ ZeroConsole::ZeroConsole ()
     output->setMultiLine (true);
     output->setReturnKeyStartsNewLine (false);
     output->setReadOnly (true);
-    output->setScrollbarsShown (false);
+    output->setScrollbarsShown (true);
     output->setCaretVisible (false);
-    output->setPopupMenuEnabled (true);
+    output->setPopupMenuEnabled (false);
+    output->setColour (TextEditor::textColourId, Colour (0xff25ff00));
     output->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    output->setText (String());
+    output->setText (TRANS("ZeroMote 1.0\n"));
 
 
     //[UserPreSize]
 	output->setText(String::empty, false);
-	output->setFont(Font("Terminus (TTF)", 12.0f, Font::bold));
+	output->setFont(Font("Terminus (TTF)", 16.0f, Font::bold));
+	output->setText (TRANS("ZeroMote 1.0"));
+	output->setFont(Font("Terminus (TTF)", 14.0f, Font::bold));
+	output->setColour (TextEditor::textColourId, Colours::white);
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -97,8 +101,10 @@ void ZeroConsole::resized()
 void ZeroConsole::logMessage(const String &message)
 {
 	MessageManagerLock mmlock;
+	output->setCaretPosition(output->getText().length());
+	output->insertTextAtCaret("\n");
 	if (message.startsWith("ERR"))
-		output->setColour(TextEditor::textColourId, Colour (0xffd73535));
+		output->setColour(TextEditor::textColourId, Colour (0xffff696b));
 	if (message.startsWith("DBG"))
 		output->setColour(TextEditor::textColourId, Colour (0xffcbf2f0));
 
@@ -123,9 +129,9 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="cf000000"/>
   <TEXTEDITOR name="" id="a3b2308a344052bc" memberName="output" virtualName=""
-              explicitFocusOrder="0" pos="0 0 0M 0M" bkgcol="0" initialText=""
-              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
-              caret="0" popupmenu="1"/>
+              explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ff25ff00" bkgcol="0"
+              initialText="ZeroMote 1.0&#10;" multiline="1" retKeyStartsLine="0"
+              readonly="1" scrollbars="1" caret="0" popupmenu="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -22,15 +22,15 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "VLCWrapper.h"
-#include "ZeroMoveControl.h"
 class ZeroCommandManager;
 //[/Headers]
 
-#include "ZeroStatus.h"
 #include "ZeroXYComponent.h"
+#include "ZeroStatus.h"
 #include "ZeroConsole.h"
 #include "ZeroLiveStatus.h"
 #include "ZeroMovingStatus.h"
+#include "ZeroActionBar.h"
 
 
 //==============================================================================
@@ -73,15 +73,15 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	ZeroCommandManager *zeroCommandManager;
-	ScopedPointer <ZeroMoveControl> zeroMoveControl;
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ZeroStatus> status;
     ScopedPointer<ZeroXYComponent> cameraControl;
+    ScopedPointer<ZeroStatus> status;
     ScopedPointer<ZeroConsole> zeroConsole;
     ScopedPointer<ZeroLiveStatus> liveStatus;
     ScopedPointer<ZeroMovingStatus> movingStatus;
+    ScopedPointer<ZeroActionBar> actionBar;
 
 
     //==============================================================================

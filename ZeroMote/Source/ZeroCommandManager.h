@@ -14,7 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Zero.h"
 
-class ZeroCommandManager : public Thread
+class ZeroCommandManager : public Thread, public AsyncUpdater
 {
 	public:
 		ZeroCommandManager();
@@ -28,26 +28,32 @@ class ZeroCommandManager : public Thread
 		void requestHealth();
 		void setRemoteMode();
 		void setLocalMode();
-		void setActive(bool _isActive) { isActive = _isActive;  }
+		bool setActive(bool _isActive);
 		void setMotors(int16_t left, int16_t right);
-
+		void handleAsyncUpdate();
 		void connectToRobot(const RemoteRobotItem &robot);
 		class Listener
 		{
 			public:
 				virtual void connectToRobot(const RemoteRobotItem &robot) {}
+				virtual void liveDataUpdated() {}
 		};
+		void updateLiveData(mpack_reader_t *reader);
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
 		String getCodeForAction(const Identifier &actionId);
+		current_status_t getLiveParameters() { return (current_status); }
 	private:
 		bool isActive;
+		bool is_connected;
 		void writeAuthCode();
 		char *writeBuffer;
 		size_t writeBufferSize;
 		mpack_writer_t writer;
-		ScopedPointer<DatagramSocket> udpSocket;
+		ScopedPointer<StreamingSocket> netSocket;
 		int neuralPort;
 		String neuralHost;
 		ListenerList <Listener> listeners;
 		var keymap;
+		Array<MemoryBlock, CriticalSection> mpackData;
+		struct current_status_t current_status;
 };

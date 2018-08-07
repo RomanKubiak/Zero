@@ -1,11 +1,12 @@
 {
-    "keymap": [
-  "up":           { "code": "w", "live": 1},
-  "down":         { "code": "s", "live": 1},
-  "left":         { "code": "a", "live": 1},
-  "right":        { "code": "d", "live": 1},
-  "live_status":  { "code": "F1" , "live": 0}, 
-  "options":      { "code": "TAB", "live": 0 },
-  "console" :     { "code":  "`", "live": 0}
-    ]
+  "keymap": {
+    "up": { "code" : "w" },
+    "down": { "code": "s" },
+    "left": { "code": "a" },
+    "right": { "code": "d" },
+    "options": { "code": "tab" },
+    "console": { "code": "`" },
+    "live_status": { "code": "f1" },
+    "action_bar" :  { "code":  "f2" }
+  }
 }

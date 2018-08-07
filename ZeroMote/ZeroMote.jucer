@@ -6,11 +6,10 @@
               cppLanguageStandard="11" jucerVersion="5.1.1">
   <MAINGROUP id="W30pQj" name="ZeroMote">
     <GROUP id="{97E181C7-68D5-2650-A5EF-91BA487A8C3C}" name="Source">
+      <FILE id="AXwk3S" name="ZeroActionBar.cpp" compile="1" resource="0"
+            file="Source/ZeroActionBar.cpp"/>
+      <FILE id="lHdWKJ" name="ZeroActionBar.h" compile="0" resource="0" file="Source/ZeroActionBar.h"/>
       <FILE id="pSS126" name="keymap.json" compile="0" resource="1" file="keymap.json"/>
-      <FILE id="hUu9ok" name="ZeroMoveControl.cpp" compile="1" resource="0"
-            file="Source/ZeroMoveControl.cpp"/>
-      <FILE id="PUQF8y" name="ZeroMoveControl.h" compile="0" resource="0"
-            file="Source/ZeroMoveControl.h"/>
       <FILE id="qgUghs" name="ZeroMovingStatus.cpp" compile="1" resource="0"
             file="Source/ZeroMovingStatus.cpp"/>
       <FILE id="szgNWA" name="ZeroMovingStatus.h" compile="0" resource="0"

@@ -21,6 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "Zero.h"
+class ZeroCommandManager;
 //[/Headers]
 
 
@@ -33,16 +34,22 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ZeroMovingStatus  : public Component
+class ZeroMovingStatus  : public Component,
+                          public ChangeListener,
+                          public Timer
 {
 public:
     //==============================================================================
-    ZeroMovingStatus ();
+    ZeroMovingStatus (ZeroCommandManager *_zeroCommandManager);
     ~ZeroMovingStatus();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void setStatus(bool _up, bool _down, bool _left, bool _right, uint8_t _speed);
+	void changeListenerCallback(ChangeBroadcaster *b);
+	void timerCallback();
+	bool keyPressed (const KeyPress& key);
+	bool keyStateChanged (bool isKeyDown);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -54,6 +61,8 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	bool up, down, left, right;
 	uint8_t speed;
+	ZeroCommandManager *zeroCommandManager;
+
     //[/UserVariables]
 
     //==============================================================================
