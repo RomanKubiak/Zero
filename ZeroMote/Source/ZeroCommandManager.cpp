@@ -12,11 +12,11 @@
 
 ZeroCommandManager::ZeroCommandManager()
 	: writeBuffer(nullptr), writeBufferSize(0), 
-	is_connected(false), isActive(false), Thread("network thread")
+	connectedToRobot(false), Thread("network thread")
 {
-	writeBuffer = (char *)malloc(CONFIG_MPACK_WRITER_BUFFER);
-	netSocket = new StreamingSocket();
-	netSocket->bindToPort(0);
+	writeBuffer = (char *)malloc(8192);
+	socket = new StreamingSocket();
+	
 	File f("c:\\devel\\Zero\\ZeroMote\\keymap.json");
 	var keymapfile;
 	Result ret = JSON::parse (f.loadFileAsString(), keymapfile);
@@ -35,136 +35,76 @@ ZeroCommandManager::ZeroCommandManager()
 ZeroCommandManager::~ZeroCommandManager()
 {
 	stopThread(1500);
-	netSocket->close();
+	socket->close();
 	free(writeBuffer);
 }
 
-bool ZeroCommandManager::setActive(bool _isActive)
+void ZeroCommandManager::setCameraPan(int16_t angle, bool is_relative)
 {
-	isActive = _isActive;
-	_DBG("ZeroCommandManager::setActive");
-	if (netSocket)
+	if (!connectedToRobot) return;
+}
+void ZeroCommandManager::setCameraTilt(int16_t angle, bool is_relative)
+{
+	if (!connectedToRobot) return;
+}
+
+void ZeroCommandManager::requestI2CScan()
+{
+	if (!connectedToRobot) return;
+	socket->write(CMD_I2CSCAN, 3);
+}
+
+void ZeroCommandManager::requestHealth()
+{
+	if (!connectedToRobot) return;
+	socket->write(CMD_READ, 2);
+}
+
+void ZeroCommandManager::setMotors(int16_t left, int16_t right)
+{
+	if (!connectedToRobot) return;
+}
+
+bool ZeroCommandManager::connectToRobot(const RemoteRobotItem &_currentRobot)
+{
+	currentRobot = _currentRobot;
+	connectedToRobot = false;
+
+	if (socket)
 	{
-		if (netSocket->isConnected())
+		if (socket->isConnected())
 		{
-			netSocket->close();
+			socket->close();
 		}
-		
-		is_connected = netSocket->connect(neuralHost, neuralPort, 1000);
-		if (is_connected)
+
+		connectedToRobot = socket->connect(
+			currentRobot.controlUrl.getDomain(),
+			currentRobot.controlUrl.getPort(),
+			1000
+		);
+
+		if (connectedToRobot)
+		{
+			_DBG("Connected to: " + currentRobot.controlUrl.toString(true));
 			startThread();
-		
-		return (is_connected);
+		}
+		else
+		{
+			_ERR("Can't connect to: " + currentRobot.controlUrl.toString(true));
+		}
 	}
 	else
 	{
 		_ERR("no socket created");
 		stopThread(1500);
-		return (false);
 	}
-}
 
-void ZeroCommandManager::setCameraPan(int16_t angle, bool is_relative)
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 4);
-	mpack_write_u8(&writer, MSG_CMD);
-	mpack_write_u8(&writer, CMD_SERVO);
-	mpack_write_u8(&writer, (uint8_t)servo_pan);
-	mpack_write_i16(&writer, angle);
-	mpack_write_bool(&writer, is_relative);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-void ZeroCommandManager::setCameraTilt(int16_t angle, bool is_relative)
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 4);
-	mpack_write_u8(&writer, MSG_CMD);
-	mpack_write_u8(&writer, CMD_SERVO);
-	mpack_write_u8(&writer, (uint8_t)servo_tilt);
-	mpack_write_i16(&writer, angle);
-	mpack_write_bool(&writer, is_relative);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-
-void ZeroCommandManager::requestI2CScan()
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 1);
-	mpack_write_u8(&writer, MSG_I2C_SCAN);
-	mpack_writer_destroy(&writer);
-	int w = netSocket->write((void *)writeBuffer, writeBufferSize);
-	_DBG("writtren %d bytes to socket", w);
-}
-
-void ZeroCommandManager::writeAuthCode()
-{
-	mpack_start_array(&writer, 2);
-	mpack_write_u8(&writer, CONFIG_AUTH_TOKEN_TYPE);
-	mpack_write_u32(&writer, CONFIG_AUTH_TOKEN);
-}
-
-void ZeroCommandManager::requestHealth()
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 1);
-	mpack_write_u8(&writer, MSG_HEALTH_UPDATE);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-
-void ZeroCommandManager::setRemoteMode()
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 1);
-	mpack_write_u8(&writer, MSG_MODE_REMOTE);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-
-void ZeroCommandManager::setLocalMode()
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 1);
-	mpack_write_u8(&writer, MSG_MODE_LOCAL);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-
-void ZeroCommandManager::setMotors(int16_t left, int16_t right)
-{
-	if (!isActive) return;
-	mpack_writer_init_growable(&writer, &writeBuffer, &writeBufferSize);
-	writeAuthCode();
-	mpack_start_array(&writer, 4);
-	mpack_write_u8(&writer, MSG_CMD);
-	mpack_write_u8(&writer, CMD_MOTOR);
-	mpack_write_i16(&writer, (int16_t)left);
-	mpack_write_i16(&writer, (int16_t)right);
-	mpack_writer_destroy(&writer);
-	netSocket->write((void *)writeBuffer, writeBufferSize);
-}
-
-void ZeroCommandManager::connectToRobot(const RemoteRobotItem &robot)
-{
 	for (int i = 0; i < listeners.size(); i++)
 	{
-		listeners.getListeners()[i]->connectToRobot(robot);
+		listeners.getListeners()[i]->connectedToRobot();
 	}
+
+	return (connectedToRobot);
 }
 
 String ZeroCommandManager::getCodeForAction(const Identifier &actionId)
@@ -181,28 +121,16 @@ String ZeroCommandManager::getCodeForAction(const Identifier &actionId)
 	return (String::empty);
 }
 
-void ZeroCommandManager::updateLiveData(mpack_reader_t *reader)
-{
-	current_status.current_draw = mpack_expect_uint(reader);
-	current_status.azimuth_body = mpack_expect_uint(reader);
-	current_status.battery_mv   = mpack_expect_uint(reader);
-}
-
 void ZeroCommandManager::handleAsyncUpdate()
 {
-	mpack_reader_t reader;
-	ScopedLock sl(mpackData.getLock());
-	const int size = mpackData.size();
-	for (int i = 0; i < size; i++)
 	{
-		MemoryBlock bl = mpackData[i];
-		mpack_reader_init_data(&reader, (const char *)bl.getData(), bl.getSize());
-		if (mpack_expect_array(&reader) > 0)
+		ScopedLock sl(readData.getLock());
+		for (int i = 0; i < readData.size(); i++)
 		{
-			updateLiveData(&reader);
+			_DBG(readData[i].toString());
 		}
+		readData.clear();
 	}
-	mpackData.clear();
 
 	for (int i = 0; i < listeners.size(); i++)
 	{
@@ -212,27 +140,88 @@ void ZeroCommandManager::handleAsyncUpdate()
 
 void ZeroCommandManager::run()
 {
-	while (true)
+	while (!threadShouldExit())
 	{
-		int ret = netSocket->waitUntilReady(true, 500);
-		if (ret == -1)
+		if (socket != nullptr)
 		{
-			return;
+			const int ready = socket->waitUntilReady (true, 0);
+
+			if (ready < 0)
+			{
+				break;
+			}
+
+			if (ready == 0)
+			{
+				wait (1);
+				continue;
+			}
+		}
+		else
+		{
+			break;
 		}
 
-		if (threadShouldExit())
-		{
-			return;
-		}
-
-		if (ret == 1)
-		{
-			MemoryBlock readBuffer(512);
-			const int readSize = netSocket->read(readBuffer.getData(), readBuffer.getSize(), false);
-			readBuffer.setSize(readSize, false);
-			ScopedLock sl(mpackData.getLock());
-			mpackData.add(readBuffer);
-			triggerAsyncUpdate();
-		}
+		if (threadShouldExit() || !readNextMessageInt())
+			break;
 	}
+}
+
+bool ZeroCommandManager::readNextMessageInt()
+{
+	uint8_t messageHeader[9];
+	const int bytes = socket->read (messageHeader, sizeof (messageHeader), true);
+
+	if (bytes == sizeof (messageHeader)
+		&& messageHeader[0] == '\r'
+		&& messageHeader[1] == '\n'
+		&& messageHeader[2] == '\r'
+		&& messageHeader[3] == '\n')
+	{
+		messageHeader[8] = '\0';
+		int bytesInMessage = strtol((const char *)&messageHeader[4], NULL, 16);
+		Logger::outputDebugString("NET> message size: " + String(bytesInMessage));
+
+		if (bytesInMessage > 0)
+		{
+			MemoryBlock messageData ((size_t)bytesInMessage, true);
+			int bytesRead = 0;
+
+			while (bytesInMessage > 0)
+			{
+				if (threadShouldExit())
+					return false;
+
+				const int numThisTime = jmin (bytesInMessage, 65536);
+				void* const data = addBytesToPointer (messageData.getData(), bytesRead);
+
+				const int bytesIn = socket->read (data, numThisTime, true);
+
+				if (bytesIn <= 0)
+					break;
+
+				bytesRead += bytesIn;
+				bytesInMessage -= bytesIn;
+			}
+
+			if (bytesRead >= 0)
+			{
+				ScopedLock sl(readData.getLock());
+				readData.add(messageData);
+				Logger::outputDebugString(messageData.toString());
+				triggerAsyncUpdate();
+			}
+		}
+
+	}
+
+	else if (bytes < 0)
+	{
+		/*if (socket != nullptr)
+			deletePipeAndSocket();
+
+		connectionLostInt();*/
+		return false;
+	}
+	return (true);
 }

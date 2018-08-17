@@ -26,42 +26,6 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 #include "ZeroVideoOverlay.h"
 #include "ZeroCommandManager.h"
-
-ZeroConfigDownloader::ZeroConfigDownloader(ZeroMain &_owner)
-	: owner(_owner), Thread("Config downloader")
-{
-}
-
-ZeroConfigDownloader::~ZeroConfigDownloader()
-{
-	if (isThreadRunning())
-		stopThread(500);
-}
-
-bool ZeroConfigDownloader::streamProgress(void *context, int bytesSent, int totalBytes)
-{
-	return true;
-}
-
-void ZeroConfigDownloader::run()
-{
-	if (jsonConfigInputStream.get())
-		delete (jsonConfigInputStream.release());
-
-	jsonConfigInputStream = playUrl.createInputStream(false, &ZeroConfigDownloader::streamProgress, this, String::empty, 500);
-
-	if (jsonConfigInputStream == nullptr)
-	{
-		_ERR("Failed to create input stream from URL: " + playUrl.toString(true));
-		return;
-	}
-
-	downloadedData = jsonConfigInputStream->readEntireStreamAsString();
-	if (downloadedData.length() != 0)
-	{
-		owner.triggerAsyncUpdate();
-	}
-}
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -83,7 +47,6 @@ ZeroMain::ZeroMain (ZeroVideoOverlay *_overlay, ZeroCommandManager *_zeroCommand
 
 
     //[Constructor] You can add your own custom stuff here..
-	zeroConfigDownloader = new ZeroConfigDownloader(*this);
     //[/Constructor]
 }
 
@@ -162,46 +125,19 @@ void ZeroMain::focusGained (FocusChangeType cause)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void ZeroMain::handleAsyncUpdate()
 {
-	if (!zeroConfigDownloader->getConfig().isEmpty())
-	{
-		Logger::writeToLog(zeroConfigDownloader->getConfig());
-		const Result res = JSON::parse(zeroConfigDownloader->getConfig(), jsonConfig);
-
-		if (res.failed())
-		{
-			_ERR("Failed to parse config as JSON\n");
-			zeroCommandManager->setActive(false);
-
-		}
-		else
-		{
-			const String host = jsonConfig.getDynamicObject()->getProperty("neural_host").toString();
-			uint16_t port = jsonConfig.getDynamicObject()->getProperty("neural_port").toString().getIntValue();
-			zeroCommandManager->setNeuralHost(host);
-			zeroCommandManager->setNeuralPort(port);
-			if (zeroCommandManager->setActive(true))
-			{
-				vlc->loadMedia(jsonConfig.getDynamicObject()->getProperty("video_url"));
-				vlc->play();
-				zeroCommandManager->setRemoteMode();
-				_DBG("connected to remote RPC host");
-			}
-			else
-			{
-				_ERR("Can't connect to RPC port");
-			}
-		}
-	}
-	else
-	{
-		zeroCommandManager->setActive(false);
-	}
 }
 
-void ZeroMain::connectToRobot(const RemoteRobotItem &robot)
+void ZeroMain::connectedToRobot()
 {
-	zeroConfigDownloader->setUrl(robot.url);
-	zeroConfigDownloader->startThread();
+	if (zeroCommandManager->isConnected())
+	{
+		RemoteRobotItem robot = zeroCommandManager->getCurrentRobot();
+		_DBG("Video url: " + robot.videoUrl.toString(true));
+		vlc->stop();
+		vlc->loadMedia(robot.videoUrl.toString(true));
+		vlc->play();
+		vlc->setVisible(true);
+	}
 }
 //[/MiscUserCode]
 

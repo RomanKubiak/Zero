@@ -27,22 +27,6 @@
 class ZeroVideoOverlay;
 class ZeroCommandManager;
 class ZeroMain;
-
-class ZeroConfigDownloader : public Thread
-{
-	public:
-		ZeroConfigDownloader(ZeroMain &_owner);
-		~ZeroConfigDownloader();
-		void setUrl(const URL &_playUrl) { playUrl = _playUrl; }
-		void run();
-		static bool streamProgress(void *context, int bytesSent, int totalBytes);
-		const String &getConfig() { return downloadedData; }
-	private:
-		ZeroMain &owner;
-		URL playUrl;
-		ScopedPointer<InputStream> jsonConfigInputStream;
-		String downloadedData;
-};
 //[/Headers]
 
 
@@ -67,7 +51,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void handleAsyncUpdate();
-	void connectToRobot(const RemoteRobotItem &robot);
+	void connectedToRobot();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -84,8 +68,6 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	ZeroVideoOverlay *overlay;
 	ZeroCommandManager *zeroCommandManager;
-	ScopedPointer<ZeroConfigDownloader> zeroConfigDownloader;
-	var jsonConfig;
 	ScopedPointer <ApplicationCommandManager> appManager;
     //[/UserVariables]
 

@@ -46,7 +46,10 @@ ZeroRobotList::ZeroRobotList (ZeroCommandManager *_zeroCommandManager)
 
     //[Constructor] You can add your own custom stuff here..
 	component->updateContent();
-	robotItemList.add(RemoteRobotItem("Zero @uranus", URL("http://uranus.hopto.org:31337/")));
+	robotItemList.add(RemoteRobotItem(
+		"Zero @uranus",
+		URL("http://user:Jesien01.@uranus.hopto.org:8554/stream/video.mjpeg"),
+		URL("tcp://uranus.hopto.org:31338")));
     //[/Constructor]
 }
 
@@ -98,14 +101,17 @@ void ZeroRobotList::paintListBoxItem (int rowNumber, Graphics& g, int width, int
 
 	g.setColour(Colours::white);
 	g.setFont(height * 0.3f);
-	g.drawText(robotItemList[rowNumber].name, 0, 0, width, height * 0.5f, Justification::centredLeft);
+	g.drawText(robotItemList[rowNumber].name, 0, 0, width, height * 0.3f, Justification::centredLeft);
+
 	g.setFont(height * 0.15f);
-	g.drawText(robotItemList[rowNumber].url.toString(true), 0, height * 0.5f, width, height * 0.5f, Justification::centredLeft);
+	g.drawText("Control: " + robotItemList[rowNumber].controlUrl.toString(true), 0, height * 0.3f, width, height * 0.3f, Justification::centredLeft);
+	g.setFont(height * 0.1f);
+	g.drawText("Video: " + robotItemList[rowNumber].videoUrl.toString(true), 0, height * 0.6f, width, height * 0.3f, Justification::centredLeft);
 }
 
 void ZeroRobotList::listBoxItemDoubleClicked (int row, const MouseEvent &e)
 {
-	if (!robotItemList[row].url.isEmpty())
+	if (!robotItemList[row].controlUrl.isEmpty())
 	{
 		zeroCommandManager->connectToRobot(robotItemList[row]);
 		if (getParentComponent() && getParentComponent()->getParentComponent())

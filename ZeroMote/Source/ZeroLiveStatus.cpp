@@ -55,6 +55,7 @@ ZeroLiveStatus::ZeroLiveStatus (ZeroCommandManager *_zeroCommandManager)
 
 
     //[Constructor] You can add your own custom stuff here..
+	
     //[/Constructor]
 }
 
@@ -98,10 +99,12 @@ void ZeroLiveStatus::visibilityChanged()
 	if (isVisible())
 	{
 		startTimerHz(10);
+		zeroCommandManager->addListener(this);
 	}
 	else
 	{
 		stopTimer();
+		zeroCommandManager->removeListener(this);
 	}
     //[/UserCode_visibilityChanged]
 }
@@ -112,6 +115,11 @@ void ZeroLiveStatus::visibilityChanged()
 void ZeroLiveStatus::timerCallback()
 {
 	zeroCommandManager->requestHealth();
+}
+
+void ZeroLiveStatus::liveDataUpdated()
+{
+	_DBG("ZeroLiveStatus::liveDataUpdated");
 }
 //[/MiscUserCode]
 
@@ -126,8 +134,8 @@ void ZeroLiveStatus::timerCallback()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroLiveStatus" componentName=""
-                 parentClasses="public Component, public Timer" constructorParams="ZeroCommandManager *_zeroCommandManager"
-                 variableInitialisers="zeroCommandManager(_zeroCommandManager)"
+                 parentClasses="public Component, public Timer, ZeroCommandManager::Listener"
+                 constructorParams="ZeroCommandManager *_zeroCommandManager" variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="128" initialHeight="100">
   <METHODS>

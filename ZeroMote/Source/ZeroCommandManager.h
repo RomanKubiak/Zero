@@ -9,10 +9,13 @@
 */
 
 #pragma once
-#include <mpack/mpack.h>
-#include <../shared/config.h>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Zero.h"
+
+#define CMD_READ		"r\r"
+#define CMD_I2CSCAN		">i\r"
+
+struct current_status_t {};
 
 class ZeroCommandManager : public Thread, public AsyncUpdater
 {
@@ -28,32 +31,34 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 		void requestHealth();
 		void setRemoteMode();
 		void setLocalMode();
-		bool setActive(bool _isActive);
 		void setMotors(int16_t left, int16_t right);
 		void handleAsyncUpdate();
-		void connectToRobot(const RemoteRobotItem &robot);
+		bool connectToRobot(const RemoteRobotItem &robot);
+		RemoteRobotItem getCurrentRobot() { return currentRobot;  }
 		class Listener
 		{
 			public:
-				virtual void connectToRobot(const RemoteRobotItem &robot) {}
+				virtual void connectedToRobot() {}
 				virtual void liveDataUpdated() {}
 		};
-		void updateLiveData(mpack_reader_t *reader);
+
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
+		void removeListener(ZeroCommandManager::Listener *listenerToRemove) { listeners.remove(listenerToRemove); }
 		String getCodeForAction(const Identifier &actionId);
 		current_status_t getLiveParameters() { return (current_status); }
+		bool isConnected() { return connectedToRobot;  }
+		bool readNextMessageInt();
 	private:
-		bool isActive;
-		bool is_connected;
+		bool connectedToRobot;
 		void writeAuthCode();
 		char *writeBuffer;
 		size_t writeBufferSize;
-		mpack_writer_t writer;
-		ScopedPointer<StreamingSocket> netSocket;
+		ScopedPointer<StreamingSocket> socket;
 		int neuralPort;
 		String neuralHost;
 		ListenerList <Listener> listeners;
 		var keymap;
-		Array<MemoryBlock, CriticalSection> mpackData;
+		Array<MemoryBlock, CriticalSection> readData;
 		struct current_status_t current_status;
+		RemoteRobotItem currentRobot;
 };

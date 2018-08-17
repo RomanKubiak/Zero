@@ -20,8 +20,7 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../JuceLibraryCode/JuceHeader.h"
-class ZeroCommandManager;
+#include "ZeroCommandManager.h"
 //[/Headers]
 
 
@@ -35,7 +34,8 @@ class ZeroCommandManager;
                                                                     //[/Comments]
 */
 class ZeroLiveStatus  : public Component,
-                        public Timer
+                        public Timer,
+                        ZeroCommandManager::Listener
 {
 public:
     //==============================================================================
@@ -45,6 +45,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void timerCallback() override;
+	void liveDataUpdated();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
