@@ -35,7 +35,8 @@
 */
 class ZeroLiveStatus  : public Component,
                         public Timer,
-                        ZeroCommandManager::Listener
+                        public ZeroCommandManager::Listener,
+                        public TableListBoxModel
 {
 public:
     //==============================================================================
@@ -45,7 +46,10 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void timerCallback() override;
-	void liveDataUpdated();
+	void liveDataUpdated(const MemoryBlock &data);
+	int getNumRows() override;
+	void paintCell (Graphics &g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) override;
+	void paintRowBackground (Graphics &g, int rowNumber, int width, int height, bool rowIsSelected) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -57,10 +61,11 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	ZeroCommandManager *zeroCommandManager;
+	StringPairArray params;
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> label;
+    ScopedPointer<TableListBox> list;
 
 
     //==============================================================================

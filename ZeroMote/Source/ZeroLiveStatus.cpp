@@ -34,18 +34,8 @@ ZeroLiveStatus::ZeroLiveStatus (ZeroCommandManager *_zeroCommandManager)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (label = new Label ("new label",
-                                          TRANS("AZMT: 000\n"
-                                          "SPDL: 000\n"
-                                          "SPDR: 000\n"
-                                          "CAMP: 000\n"
-                                          "CAMT: 000\n"
-                                          "CURR: 000")));
-    label->setFont (Font ("Terminus (TTF)", 16.00f, Font::bold).withExtraKerningFactor (0.090f));
-    label->setJustificationType (Justification::centredTop);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (list = new TableListBox ("params", this));
+    list->setName ("params");
 
 
     //[UserPreSize]
@@ -55,7 +45,10 @@ ZeroLiveStatus::ZeroLiveStatus (ZeroCommandManager *_zeroCommandManager)
 
 
     //[Constructor] You can add your own custom stuff here..
-	
+	list->getHeader().addColumn("name", 1, 32);
+	list->getHeader().addColumn("value", 2, 32);
+	list->setHeaderHeight(0);
+	list->updateContent();
     //[/Constructor]
 }
 
@@ -64,7 +57,7 @@ ZeroLiveStatus::~ZeroLiveStatus()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    label = nullptr;
+    list = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -88,8 +81,10 @@ void ZeroLiveStatus::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    list->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     //[UserResized] Add your own custom resize handling here..
+	list->getHeader().setColumnWidth(1, getWidth() / 2);
+	list->getHeader().setColumnWidth(2, getWidth() / 2);
     //[/UserResized]
 }
 
@@ -117,9 +112,42 @@ void ZeroLiveStatus::timerCallback()
 	zeroCommandManager->requestHealth();
 }
 
-void ZeroLiveStatus::liveDataUpdated()
+void ZeroLiveStatus::liveDataUpdated(const MemoryBlock &data)
 {
-	_DBG("ZeroLiveStatus::liveDataUpdated");
+	/* az body
+	   az camera
+	   current
+	   battery
+	   servo0
+	   servo1
+	*/
+	const String s = data.toString();
+	const String sv = s.substring(0, 7);
+	const uint32_t v = strtol(sv.toRawUTF8(), nullptr, 16);
+	_DBG(sv);
+}
+
+int ZeroLiveStatus::getNumRows()
+{
+	return (params.getAllKeys().size());
+}
+
+void ZeroLiveStatus::paintCell (Graphics &g, int rowNumber, int columnId, int width, int height, bool rowIsSelected)
+{
+	const String &name	= params.getAllKeys()[rowNumber];
+	const String &value = params.getAllValues()[rowNumber];
+	g.setColour(Colours::white);
+	g.setFont(height * 0.7f);
+	
+	if (columnId == 1)
+		g.drawText(name, 0, 0, width, height, Justification::centredLeft);
+	if (columnId == 2)
+		g.drawText(value, 0, 0, width, height, Justification::centredLeft);
+}
+
+void ZeroLiveStatus::paintRowBackground (Graphics &g, int rowNumber, int width, int height, bool rowIsSelected)
+{
+	g.fillAll(Colours::transparentBlack);
 }
 //[/MiscUserCode]
 
@@ -134,7 +162,7 @@ void ZeroLiveStatus::liveDataUpdated()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroLiveStatus" componentName=""
-                 parentClasses="public Component, public Timer, ZeroCommandManager::Listener"
+                 parentClasses="public Component, public Timer, public ZeroCommandManager::Listener, public TableListBoxModel"
                  constructorParams="ZeroCommandManager *_zeroCommandManager" variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="128" initialHeight="100">
@@ -142,12 +170,8 @@ BEGIN_JUCER_METADATA
     <METHOD name="visibilityChanged()"/>
   </METHODS>
   <BACKGROUND backgroundColour="66000000"/>
-  <LABEL name="new label" id="1089af106cfca5eb" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="0 0 0M 0M" edTextCol="ff000000" edBkgCol="0"
-         labelText="AZMT: 000&#10;SPDL: 000&#10;SPDR: 000&#10;CAMP: 000&#10;CAMT: 000&#10;CURR: 000"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Terminus (TTF)" fontsize="16" kerning="0.089999999999999996669"
-         bold="1" italic="0" justification="12" typefaceStyle="Bold"/>
+  <GENERICCOMPONENT name="params" id="993933fc9d199187" memberName="list" virtualName=""
+                    explicitFocusOrder="0" pos="0 0 0M 0M" class="TableListBox" params="&quot;params&quot;, this"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

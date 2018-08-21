@@ -39,7 +39,7 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 		{
 			public:
 				virtual void connectedToRobot() {}
-				virtual void liveDataUpdated() {}
+				virtual void liveDataUpdated(const MemoryBlock &data) {}
 		};
 
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }

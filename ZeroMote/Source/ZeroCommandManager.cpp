@@ -127,14 +127,12 @@ void ZeroCommandManager::handleAsyncUpdate()
 		ScopedLock sl(readData.getLock());
 		for (int i = 0; i < readData.size(); i++)
 		{
-			_DBG(readData[i].toString());
+			for (int k = 0; k < listeners.size(); k++)
+			{
+				listeners.getListeners()[k]->liveDataUpdated(readData[i]);
+			}
 		}
 		readData.clear();
-	}
-
-	for (int i = 0; i < listeners.size(); i++)
-	{
-		listeners.getListeners()[i]->liveDataUpdated();
 	}
 }
 
@@ -169,18 +167,15 @@ void ZeroCommandManager::run()
 
 bool ZeroCommandManager::readNextMessageInt()
 {
-	uint8_t messageHeader[9];
+	uint8_t messageHeader[11];
 	const int bytes = socket->read (messageHeader, sizeof (messageHeader), true);
 
 	if (bytes == sizeof (messageHeader)
 		&& messageHeader[0] == '\r'
-		&& messageHeader[1] == '\n'
-		&& messageHeader[2] == '\r'
-		&& messageHeader[3] == '\n')
+		&& messageHeader[1] == '\n')
 	{
-		messageHeader[8] = '\0';
-		int bytesInMessage = strtol((const char *)&messageHeader[4], NULL, 16);
-		Logger::outputDebugString("NET> message size: " + String(bytesInMessage));
+		messageHeader[10] = '\0';
+		int bytesInMessage = strtol((const char *)&messageHeader[2], NULL, 16);
 
 		if (bytesInMessage > 0)
 		{
@@ -207,8 +202,8 @@ bool ZeroCommandManager::readNextMessageInt()
 			if (bytesRead >= 0)
 			{
 				ScopedLock sl(readData.getLock());
+				Logger::outputDebugString("read message size: " + String(messageData.getSize()));
 				readData.add(messageData);
-				Logger::outputDebugString(messageData.toString());
 				triggerAsyncUpdate();
 			}
 		}
@@ -217,10 +212,6 @@ bool ZeroCommandManager::readNextMessageInt()
 
 	else if (bytes < 0)
 	{
-		/*if (socket != nullptr)
-			deletePipeAndSocket();
-
-		connectionLostInt();*/
 		return false;
 	}
 	return (true);
