@@ -25,7 +25,6 @@
       <FILE id="k5546h" name="ZeroStatus.h" compile="0" resource="0" file="Source/ZeroStatus.h"/>
       <FILE id="OWgMd8" name="ZeroConsole.cpp" compile="1" resource="0" file="Source/ZeroConsole.cpp"/>
       <FILE id="azinU7" name="ZeroConsole.h" compile="0" resource="0" file="Source/ZeroConsole.h"/>
-      <FILE id="aETOLh" name="config.h" compile="0" resource="0" file="../shared/config.h"/>
       <FILE id="LkSsES" name="ZeroXYComponent.cpp" compile="1" resource="0"
             file="Source/ZeroXYComponent.cpp"/>
       <FILE id="PeWA6P" name="ZeroXYComponent.h" compile="0" resource="0"
@@ -35,8 +34,6 @@
             file="Source/ZeroCommandManager.cpp"/>
       <FILE id="PTbMWn" name="ZeroCommandManager.h" compile="0" resource="0"
             file="Source/ZeroCommandManager.h"/>
-      <FILE id="JQW2JL" name="mpack.c" compile="1" resource="0" file="mpack/mpack.c"/>
-      <FILE id="boRMyN" name="mpack.h" compile="0" resource="0" file="mpack/mpack.h"/>
       <FILE id="CFSakz" name="Zero.cpp" compile="1" resource="0" file="Source/Zero.cpp"/>
       <FILE id="VO82ck" name="ZeroVideoOverlay.cpp" compile="1" resource="0"
             file="Source/ZeroVideoOverlay.cpp"/>

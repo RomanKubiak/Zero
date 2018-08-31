@@ -74,7 +74,6 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/ZeroConsole_89dc6c70.o \
   $(JUCE_OBJDIR)/ZeroXYComponent_cc1de5b5.o \
   $(JUCE_OBJDIR)/ZeroCommandManager_b24f2f33.o \
-  $(JUCE_OBJDIR)/mpack_5f8ca9d2.o \
   $(JUCE_OBJDIR)/Zero_ba5daf31.o \
   $(JUCE_OBJDIR)/ZeroVideoOverlay_746c3e26.o \
   $(JUCE_OBJDIR)/ZeroMain_720f68a.o \
@@ -137,11 +136,6 @@ $(JUCE_OBJDIR)/ZeroCommandManager_b24f2f33.o: ../../Source/ZeroCommandManager.cp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling ZeroCommandManager.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/mpack_5f8ca9d2.o: ../../mpack/mpack.c
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling mpack.c"
-	$(V_AT)$(CC) $(JUCE_CFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Zero_ba5daf31.o: ../../Source/Zero.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

@@ -12,7 +12,8 @@
 
 ZeroCommandManager::ZeroCommandManager()
 	: writeBuffer(nullptr), writeBufferSize(0), 
-	connectedToRobot(false), Thread("network thread")
+	connectedToRobot(false), Thread("network thread"),
+	areWeInControl(false)
 {
 	writeBuffer = (char *)malloc(8192);
 	socket = new StreamingSocket();
@@ -42,10 +43,16 @@ ZeroCommandManager::~ZeroCommandManager()
 void ZeroCommandManager::setCameraPan(int16_t angle, bool is_relative)
 {
 	if (!connectedToRobot) return;
+	char buf[128];
+	sprintf(buf, "%s:%d:0=%d\r", CMD_SERVO, is_relative, angle);
+	socket->write(buf, strlen(buf));
 }
 void ZeroCommandManager::setCameraTilt(int16_t angle, bool is_relative)
 {
 	if (!connectedToRobot) return;
+	char buf[128];
+	sprintf(buf, "%s:%d:1=%d\r", CMD_SERVO, is_relative, angle);
+	socket->write(buf, strlen(buf));
 }
 
 void ZeroCommandManager::requestI2CScan()
@@ -63,6 +70,20 @@ void ZeroCommandManager::requestHealth()
 void ZeroCommandManager::setMotors(int16_t left, int16_t right)
 {
 	if (!connectedToRobot) return;
+	char buf[16];
+	sprintf(buf, "%s:%d:%d\r", CMD_MOTO, left, right);
+	_DBG(buf);
+	socket->write(buf, strlen(buf));
+}
+
+void ZeroCommandManager::setControlling(const bool _areWeInControl)
+{
+	areWeInControl = _areWeInControl;
+
+	for (int k = 0; k < listeners.size(); k++)
+	{
+		listeners.getListeners()[k]->controlChanged(_areWeInControl);
+	}
 }
 
 bool ZeroCommandManager::connectToRobot(const RemoteRobotItem &_currentRobot)
@@ -167,14 +188,13 @@ void ZeroCommandManager::run()
 
 bool ZeroCommandManager::readNextMessageInt()
 {
-	uint8_t messageHeader[11];
+	uint8_t messageHeader[10];
 	const int bytes = socket->read (messageHeader, sizeof (messageHeader), true);
 
 	if (bytes == sizeof (messageHeader)
 		&& messageHeader[0] == '\r'
 		&& messageHeader[1] == '\n')
 	{
-		messageHeader[10] = '\0';
 		int bytesInMessage = strtol((const char *)&messageHeader[2], NULL, 16);
 
 		if (bytesInMessage > 0)
@@ -202,7 +222,6 @@ bool ZeroCommandManager::readNextMessageInt()
 			if (bytesRead >= 0)
 			{
 				ScopedLock sl(readData.getLock());
-				Logger::outputDebugString("read message size: " + String(messageData.getSize()));
 				readData.add(messageData);
 				triggerAsyncUpdate();
 			}

@@ -50,6 +50,8 @@ public:
 	int getNumRows() override;
 	void paintCell (Graphics &g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) override;
 	void paintRowBackground (Graphics &g, int rowNumber, int width, int height, bool rowIsSelected) override;
+	bool debugUpdate(DynamicObject *o);
+	bool runtimeUpdate(DynamicObject *o);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

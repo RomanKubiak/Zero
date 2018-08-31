@@ -37,13 +37,14 @@ ZeroMovingStatus::ZeroMovingStatus (ZeroCommandManager *_zeroCommandManager)
 
     //[UserPreSize]
 	up = down = left = right = false;
+	upChanged = downChanged = leftChanged = rightChanged = false;
     //[/UserPreSize]
 
     setSize (400, 400);
 
 
     //[Constructor] You can add your own custom stuff here..
-	startTimerHz(10);
+	startTimerHz(3);
     //[/Constructor]
 }
 
@@ -160,6 +161,11 @@ void ZeroMovingStatus::resized()
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void ZeroMovingStatus::setStatus(bool _up, bool _down, bool _left, bool _right, uint8_t _speed)
 {
+	upChanged		= (up != _up);
+	downChanged		= (down != _down);
+	leftChanged		= (left != _left);
+	rightChanged	= (right != _right);
+
 	up = _up;
 	down = _down;
 	left = _left;
@@ -173,16 +179,27 @@ void ZeroMovingStatus::changeListenerCallback(ChangeBroadcaster *b)
 
 void ZeroMovingStatus::timerCallback()
 {
-	repaint();
+	setStatus(
+		KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("up")).getKeyCode()),
+		KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("down")).getKeyCode()),
+		KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("left")).getKeyCode()),
+		KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("right")).getKeyCode())
+	);
+	const bool ctl = zeroCommandManager->getControlStatus();
+	if (upChanged || leftChanged || downChanged || rightChanged)
+	{
+		_DBG("ctl: %d up:%d/%d down:%d/%d left:%d/%d right:%d/%d", ctl, up, upChanged, down, downChanged, left, leftChanged, right, rightChanged);
+		if (ctl)
+		{
+			up ? zeroCommandManager->setMotors(32, 32) : zeroCommandManager->setMotors(0,0);
+		}
+	}
+	//repaint();
 }
 
 bool ZeroMovingStatus::keyPressed (const KeyPress& key)
 {
 	//[UserCode_keyPressed] -- Add your code here...
-	up = zeroCommandManager->getCodeForAction("up").equalsIgnoreCase(key.getTextDescription());
-	down = zeroCommandManager->getCodeForAction("down").equalsIgnoreCase(key.getTextDescription());
-	left = zeroCommandManager->getCodeForAction("left").equalsIgnoreCase(key.getTextDescription());
-	right = zeroCommandManager->getCodeForAction("right").equalsIgnoreCase(key.getTextDescription());
 	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
 				   //[/UserCode_keyPressed]
 }
@@ -190,10 +207,6 @@ bool ZeroMovingStatus::keyPressed (const KeyPress& key)
 bool ZeroMovingStatus::keyStateChanged (bool isKeyDown)
 {
 	//[UserCode_keyStateChanged] -- Add your code here...
-	up = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("up")).getKeyCode());
-	down = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("down")).getKeyCode());
-	left = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("left")).getKeyCode());
-	right = KeyPress::isKeyCurrentlyDown(KeyPress::createFromDescription(zeroCommandManager->getCodeForAction("right")).getKeyCode());
 	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
 				   //[/UserCode_keyStateChanged]
 }

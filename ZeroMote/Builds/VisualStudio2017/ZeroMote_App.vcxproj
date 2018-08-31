@@ -159,7 +159,6 @@
     <ClCompile Include="..\..\Source\ZeroConsole.cpp"/>
     <ClCompile Include="..\..\Source\ZeroXYComponent.cpp"/>
     <ClCompile Include="..\..\Source\ZeroCommandManager.cpp"/>
-    <ClCompile Include="..\..\mpack\mpack.c"/>
     <ClCompile Include="..\..\Source\Zero.cpp"/>
     <ClCompile Include="..\..\Source\ZeroVideoOverlay.cpp"/>
     <ClCompile Include="..\..\Source\ZeroMain.cpp"/>
@@ -1295,11 +1294,9 @@
     <ClInclude Include="..\..\Source\ZeroRobotList.h"/>
     <ClInclude Include="..\..\Source\ZeroStatus.h"/>
     <ClInclude Include="..\..\Source\ZeroConsole.h"/>
-    <ClInclude Include="..\..\..\shared\config.h"/>
     <ClInclude Include="..\..\Source\ZeroXYComponent.h"/>
     <ClInclude Include="..\..\Source\Zero.h"/>
     <ClInclude Include="..\..\Source\ZeroCommandManager.h"/>
-    <ClInclude Include="..\..\mpack\mpack.h"/>
     <ClInclude Include="..\..\Source\ZeroVideoOverlay.h"/>
     <ClInclude Include="..\..\Source\ZeroMain.h"/>
     <ClInclude Include="..\..\Source\VLCWrapper.h"/>

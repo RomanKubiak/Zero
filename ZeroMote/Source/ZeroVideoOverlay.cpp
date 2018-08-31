@@ -89,7 +89,7 @@ void ZeroVideoOverlay::resized()
     cameraControl->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     status->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     zeroConsole->setBounds (0, 0, getWidth() - 0, proportionOfHeight (0.3000f));
-    liveStatus->setBounds (getWidth() - 132, getHeight() - 100, 128, 94);
+    liveStatus->setBounds (getWidth() - 132, proportionOfHeight (0.1000f), 128, proportionOfHeight (0.8000f));
     movingStatus->setBounds (8, getHeight() - 108, 100, 100);
     actionBar->setBounds (110, getHeight() - 32, proportionOfWidth (0.5000f), 30);
     //[UserResized] Add your own custom resize handling here..
@@ -124,10 +124,8 @@ bool ZeroVideoOverlay::keyPressed (const KeyPress& key)
 	{
 		actionBar->setVisible(!actionBar->isVisible());
 	}
-	else
-	{
-		movingStatus->keyPressed(key);
-	}
+	
+	movingStatus->keyPressed(key);
 	return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
 }
@@ -220,7 +218,7 @@ BEGIN_JUCER_METADATA
              explicitFocusOrder="0" pos="0 0 0M 30%" sourceFile="ZeroConsole.cpp"
              constructorParams=""/>
   <JUCERCOMP name="" id="25281c6779024c44" memberName="liveStatus" virtualName=""
-             explicitFocusOrder="0" pos="132R 100R 128 94" sourceFile="ZeroLiveStatus.cpp"
+             explicitFocusOrder="0" pos="132R 10% 128 80%" sourceFile="ZeroLiveStatus.cpp"
              constructorParams="zeroCommandManager"/>
   <JUCERCOMP name="" id="32b80931dd9a5d8c" memberName="movingStatus" virtualName=""
              explicitFocusOrder="0" pos="8 108R 100 100" sourceFile="ZeroMovingStatus.cpp"

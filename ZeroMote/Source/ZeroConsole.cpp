@@ -39,17 +39,14 @@ ZeroConsole::ZeroConsole ()
     output->setScrollbarsShown (true);
     output->setCaretVisible (false);
     output->setPopupMenuEnabled (false);
-    output->setColour (TextEditor::textColourId, Colour (0xff25ff00));
+    output->setColour (TextEditor::textColourId, Colours::white);
     output->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     output->setText (TRANS("ZeroMote 1.0\n"));
 
 
     //[UserPreSize]
-	output->setText(String::empty, false);
-	output->setFont(Font("Terminus (TTF)", 16.0f, Font::bold));
-	output->setText (TRANS("ZeroMote 1.0"));
-	output->setFont(Font("Terminus (TTF)", 14.0f, Font::bold));
-	output->setColour (TextEditor::textColourId, Colours::white);
+	output->setFont(Font(Font::getDefaultMonospacedFontName(), 10.0f, Font::plain));
+	output->setText (TRANS("ZeroMote 1.0\n"));
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -79,7 +76,7 @@ void ZeroConsole::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xcf000000));
+    g.fillAll (Colour (0x66000000));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -105,9 +102,6 @@ void ZeroConsole::logMessage(const String &message)
 	output->insertTextAtCaret("\n");
 	if (message.startsWith("ERR"))
 		output->setColour(TextEditor::textColourId, Colour (0xffff696b));
-	if (message.startsWith("DBG"))
-		output->setColour(TextEditor::textColourId, Colour (0xffcbf2f0));
-
 	output->insertTextAtCaret(message.substring(3));
 	output->setColour(TextEditor::textColourId, Colours::white);
 }
@@ -127,9 +121,9 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component, public Logger" constructorParams=""
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
-  <BACKGROUND backgroundColour="cf000000"/>
+  <BACKGROUND backgroundColour="66000000"/>
   <TEXTEDITOR name="" id="a3b2308a344052bc" memberName="output" virtualName=""
-              explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ff25ff00" bkgcol="0"
+              explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ffffffff" bkgcol="0"
               initialText="ZeroMote 1.0&#10;" multiline="1" retKeyStartsLine="0"
               readonly="1" scrollbars="1" caret="0" popupmenu="0"/>
 </JUCER_COMPONENT>

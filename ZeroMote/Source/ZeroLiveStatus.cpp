@@ -45,10 +45,12 @@ ZeroLiveStatus::ZeroLiveStatus (ZeroCommandManager *_zeroCommandManager)
 
 
     //[Constructor] You can add your own custom stuff here..
-	list->getHeader().addColumn("name", 1, 32);
-	list->getHeader().addColumn("value", 2, 32);
+	list->getHeader().addColumn("name", 1, 58);
+	list->getHeader().addColumn("value", 2, 58);
 	list->setHeaderHeight(0);
 	list->updateContent();
+	list->autoSizeAllColumns();
+	list->setColour(ListBox::backgroundColourId, Colours::transparentBlack);
     //[/Constructor]
 }
 
@@ -83,8 +85,6 @@ void ZeroLiveStatus::resized()
 
     list->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     //[UserResized] Add your own custom resize handling here..
-	list->getHeader().setColumnWidth(1, getWidth() / 2);
-	list->getHeader().setColumnWidth(2, getWidth() / 2);
     //[/UserResized]
 }
 
@@ -110,21 +110,72 @@ void ZeroLiveStatus::visibilityChanged()
 void ZeroLiveStatus::timerCallback()
 {
 	zeroCommandManager->requestHealth();
+	repaint();
+}
+
+bool ZeroLiveStatus::runtimeUpdate(DynamicObject *o)
+{
+	if (o)
+	{
+		NamedValueSet &keys = o->getProperties();
+		for (int i = 0; i < keys.size(); i++)
+		{
+			const var &name = keys.getName(i).toString();
+			const var &value = o->getProperty(name.toString());
+			params.set(name, value);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool ZeroLiveStatus::debugUpdate(DynamicObject *o)
+{
+	if (o)
+	{
+		_DBG(o->getProperty("message").toString());
+		return true;
+	}
+
+	return false;
 }
 
 void ZeroLiveStatus::liveDataUpdated(const MemoryBlock &data)
 {
-	/* az body
-	   az camera
-	   current
-	   battery
-	   servo0
-	   servo1
-	*/
 	const String s = data.toString();
-	const String sv = s.substring(0, 7);
-	const uint32_t v = strtol(sv.toRawUTF8(), nullptr, 16);
-	_DBG(sv);
+	if (s.startsWith("{"))
+	{
+		var live_data;
+		Result ret = JSON::parse(s, live_data);
+		if (ret.wasOk())
+		{
+			DynamicObject *root = live_data.getDynamicObject();
+			if (root)
+			{
+				DynamicObject *dbg = root->getProperty("dbg").getDynamicObject();
+				if (dbg)
+				{
+					debugUpdate(dbg);
+					return;
+				}
+
+				if (root->getProperty("run") != var::null)
+				{
+					DynamicObject *run = root->getProperty("run").getDynamicObject();
+					if (run)
+					{
+						runtimeUpdate(run);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		_DBG(s);
+	}
+
+	list->updateContent();
 }
 
 int ZeroLiveStatus::getNumRows()
@@ -137,12 +188,11 @@ void ZeroLiveStatus::paintCell (Graphics &g, int rowNumber, int columnId, int wi
 	const String &name	= params.getAllKeys()[rowNumber];
 	const String &value = params.getAllValues()[rowNumber];
 	g.setColour(Colours::white);
-	g.setFont(height * 0.7f);
-	
+	g.setFont( Font(Font::getDefaultMonospacedFontName(), height * 0.7f, Font::plain) );
 	if (columnId == 1)
-		g.drawText(name, 0, 0, width, height, Justification::centredLeft);
+		g.drawFittedText(name, Rectangle<int>(2, 0, width-2, height), Justification::left, 1);
 	if (columnId == 2)
-		g.drawText(value, 0, 0, width, height, Justification::centredLeft);
+		g.drawFittedText(value, Rectangle<int>(2, 0, width-2, height), Justification::left, 1);
 }
 
 void ZeroLiveStatus::paintRowBackground (Graphics &g, int rowNumber, int width, int height, bool rowIsSelected)

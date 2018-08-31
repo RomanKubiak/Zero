@@ -14,6 +14,8 @@
 
 #define CMD_READ		"r\r"
 #define CMD_I2CSCAN		">i\r"
+#define CMD_MOTO		">m"
+#define CMD_SERVO		">s"
 
 struct current_status_t {};
 
@@ -32,6 +34,7 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 		void setRemoteMode();
 		void setLocalMode();
 		void setMotors(int16_t left, int16_t right);
+		void setControlling(const bool _areWeInControl);
 		void handleAsyncUpdate();
 		bool connectToRobot(const RemoteRobotItem &robot);
 		RemoteRobotItem getCurrentRobot() { return currentRobot;  }
@@ -40,6 +43,7 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 			public:
 				virtual void connectedToRobot() {}
 				virtual void liveDataUpdated(const MemoryBlock &data) {}
+				virtual void controlChanged(const bool areWeInControl) {}
 		};
 
 		void addListener(ZeroCommandManager::Listener *listenerToAdd) { listeners.add(listenerToAdd); }
@@ -48,6 +52,7 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 		current_status_t getLiveParameters() { return (current_status); }
 		bool isConnected() { return connectedToRobot;  }
 		bool readNextMessageInt();
+		bool getControlStatus() { return (areWeInControl); }
 	private:
 		bool connectedToRobot;
 		void writeAuthCode();
@@ -61,4 +66,5 @@ class ZeroCommandManager : public Thread, public AsyncUpdater
 		Array<MemoryBlock, CriticalSection> readData;
 		struct current_status_t current_status;
 		RemoteRobotItem currentRobot;
+		bool areWeInControl;
 };

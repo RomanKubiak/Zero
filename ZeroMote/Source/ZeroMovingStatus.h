@@ -45,7 +45,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void setStatus(bool _up, bool _down, bool _left, bool _right, uint8_t _speed);
+	void setStatus(bool _up, bool _down, bool _left, bool _right, uint8_t _speed=-1);
 	void changeListenerCallback(ChangeBroadcaster *b);
 	void timerCallback();
 	bool keyPressed (const KeyPress& key);
@@ -62,7 +62,7 @@ private:
 	bool up, down, left, right;
 	uint8_t speed;
 	ZeroCommandManager *zeroCommandManager;
-
+	bool upChanged, downChanged, leftChanged, rightChanged;
     //[/UserVariables]
 
     //==============================================================================

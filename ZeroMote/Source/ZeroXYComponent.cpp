@@ -106,6 +106,7 @@ void ZeroXYComponent::mouseDown (const MouseEvent& e)
 	lastDistanceX = lastDistanceY = 0;
 	startTimerHz(6);
 	wasDragged = false;
+	zeroCommandManager->setControlling(true);
     //[/UserCode_mouseDown]
 }
 
@@ -136,6 +137,8 @@ void ZeroXYComponent::mouseUp (const MouseEvent& e)
 	stopTimer();
 	lastDistanceX = lastDistanceY = 0;
 	wasDragged = false;
+
+	zeroCommandManager->setControlling(false);
     //[/UserCode_mouseUp]
 }
 
@@ -221,6 +224,10 @@ void ZeroXYComponent::timerCallback()
 	}
 }
 
+void ZeroXYComponent::controlChanged(const bool areWeInControl)
+{
+
+}
 //[/MiscUserCode]
 
 
@@ -234,8 +241,8 @@ void ZeroXYComponent::timerCallback()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ZeroXYComponent" componentName=""
-                 parentClasses="public Component, public Timer" constructorParams="ZeroCommandManager *_zeroCommandManager"
-                 variableInitialisers="zeroCommandManager(_zeroCommandManager)"
+                 parentClasses="public Component, public Timer, public ZeroCommandManager::Listener"
+                 constructorParams="ZeroCommandManager *_zeroCommandManager" variableInitialisers="zeroCommandManager(_zeroCommandManager)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="111" initialHeight="111">
   <METHODS>

@@ -21,8 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Zero.h"
-class ZeroCommandManager;
+#include "ZeroCommandManager.h"
 //[/Headers]
 
 
@@ -36,7 +35,8 @@ class ZeroCommandManager;
                                                                     //[/Comments]
 */
 class ZeroXYComponent  : public Component,
-                         public Timer
+                         public Timer,
+                         public ZeroCommandManager::Listener
 {
 public:
     //==============================================================================
@@ -46,6 +46,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void timerCallback();
+	void controlChanged(const bool areWeInControl);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
